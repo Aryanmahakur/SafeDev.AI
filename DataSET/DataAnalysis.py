@@ -19,7 +19,7 @@ def loadSample(df):
 
    print("\nLast 5 Rows:")
    print(df.tail())
-
+g
    print("\nData Types:")
    print(df.dtypes)
 

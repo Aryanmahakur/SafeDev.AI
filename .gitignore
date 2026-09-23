@@ -1,0 +1,25 @@
+# Datasets
+*.csv
+*.xlsx
+*.parquet
+
+# Virtual environments
+venv/
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Trained models
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+
+# Environment/secrets
+.env

@@ -1,0 +1,35 @@
+========== PCA DIMENSIONALITY REDUCTION ==========
+
+Original Data:
+Training Shape: (2016638, 70)
+Testing Shape: (504160, 70)
+Original Features: 70
+
+PCA Parameters:
+Number of Components: 10
+SVD Solver: auto
+Whiten: False
+Tolerance: 0.0
+Random State: 42
+
+Reduced Data:
+Training Shape: (2016638, 10)
+Testing Shape: (504160, 10)
+Reduced Features: 10
+
+Explained Variance Ratio:
+PC1: 0.690120 (69.0120%)
+PC2: 0.121485 (12.1485%)
+PC3: 0.082125 (8.2125%)
+PC4: 0.045418 (4.5418%)
+PC5: 0.022366 (2.2366%)
+PC6: 0.020343 (2.0343%)
+PC7: 0.008326 (0.8326%)
+PC8: 0.003606 (0.3606%)
+PC9: 0.001470 (0.1470%)
+PC10: 0.001336 (0.1336%)
+
+Total Explained Variance: 0.996595 (99.6595%)
+Variance Lost: 0.003405 (0.3405%)
+
+===============================================

@@ -1,5 +1,4 @@
 from sklearn.preprocessing import LabelEncoder
-
 def Encode_Y(y_train, y_test):
 
     encoder = LabelEncoder()
@@ -8,4 +7,3 @@ def Encode_Y(y_train, y_test):
     y_test = encoder.transform(y_test)
 
     return y_train, y_test 
-Encode_Y()

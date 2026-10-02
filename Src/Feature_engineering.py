@@ -14,7 +14,7 @@ def feature_engineering():
         df["Total Fwd Packets"] +
         df["Total Backward Packets"]
     )
-
+a
     df["Total Bytes"] = (
         df["Total Length of Fwd Packets"] +
         df["Total Length of Bwd Packets"]
@@ -125,4 +125,3 @@ def feature_engineering():
     print("ModelTrainingDataSet.csv saved successfully!")
 
 
-feature_engineering()

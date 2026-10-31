@@ -1,25 +1,51 @@
-# Datasets
-*.csv
-*.xlsx
-*.parquet
 
-# Virtual environments
-venv/
+# Python environment
 .venv/
-
-# Python cache
+venv/
+env/
 __pycache__/
-*.pyc
+*.py[cod]
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Trained models
-*.pkl
+# Next.js
+Interface/node_modules/
+Interface/.next/
+Interface/out/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.tmp
+
+# Large datasets - don't upload to normal Git
+*.csv
+*.parquet
+*.feather
+
+# Model artifacts - manage separately if large
 *.joblib
+*.pkl
+*.pickle
 *.h5
+*.onnx
 *.pt
 *.pth
 
-# Environment/secrets
-.env
+# Python packaging
+build/
+dist/
+*.egg-info/
+
+# OS files
+.DS_Store
+Thumbs.db

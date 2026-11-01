@@ -3336,3 +3336,1612 @@ a:focus-visible {
     padding: 30px 18px;
   }
 }
+
+/* =========================================
+   SAFEDEV.AI - HOMEPAGE SECURITY ARTWORK
+========================================= */
+
+.sd-security-art {
+  height: 390px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  background: radial-gradient(ellipse at center, #21140d, #090909 75%);
+}
+
+.sd-art-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #8c8178;
+  font-size: 9px;
+  letter-spacing: 1px;
+}
+
+.sd-art-header > div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #e1d7ce;
+}
+
+.sd-art-screen {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #30261f;
+  background: #0a0a0a;
+}
+
+.sd-art-grid {
+  position: absolute;
+  inset: 0;
+  opacity: .25;
+  background-image:
+    linear-gradient(#443126 1px, transparent 1px),
+    linear-gradient(90deg, #443126 1px, transparent 1px);
+  background-size: 27px 27px;
+}
+
+.sd-art-message {
+  position: absolute;
+  z-index: 3;
+  top: 25px;
+  left: 22px;
+  max-width: 230px;
+}
+
+.sd-art-message > span {
+  color: #ff9a52;
+  font-size: 8px;
+  letter-spacing: 1.5px;
+}
+
+.sd-art-message h3 {
+  margin-top: 10px;
+  color: #f4f3f0;
+  font-family: var(--font-heading);
+  font-size: clamp(25px, 3vw, 35px);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -1.5px;
+}
+
+.sd-art-message h3 span {
+  color: var(--orange);
+}
+
+.sd-art-message p {
+  max-width: 190px;
+  margin-top: 9px;
+  color: #92877d;
+  font-size: 9px;
+  line-height: 1.7;
+}
+
+.sd-art-network {
+  position: absolute;
+  width: 230px;
+  height: 230px;
+  right: 2%;
+  top: 46%;
+  transform: translateY(-50%);
+}
+
+.sd-art-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border: 1px solid #754323;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ring-one { width: 85px; height: 85px; }
+.ring-two { width: 155px; height: 155px; opacity: .65; }
+.ring-three { width: 225px; height: 225px; opacity: .35; }
+
+.sd-art-shield {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 68px;
+  height: 68px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #a95623;
+  border-radius: 50%;
+  background: #1b110b;
+  color: var(--orange);
+  box-shadow: 0 0 35px #ff781f30;
+  transform: translate(-50%, -50%);
+  animation: sd-shield-pulse 3s ease-in-out infinite;
+}
+
+.sd-art-connection {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 105px;
+  height: 1px;
+  transform-origin: left;
+  background: linear-gradient(90deg, #ff781f, transparent);
+}
+
+.connection-one { transform: rotate(30deg); }
+.connection-two { transform: rotate(145deg); }
+.connection-three { transform: rotate(220deg); }
+.connection-four { transform: rotate(315deg); }
+
+.sd-art-node {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border: 1px solid #ffad70;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 12px #ff781f80;
+}
+
+.sd-node-1 { top: 12%; left: 48%; }
+.sd-node-2 { top: 34%; left: 90%; }
+.sd-node-3 { top: 78%; left: 77%; }
+.sd-node-4 { top: 85%; left: 35%; }
+.sd-node-5 { top: 47%; left: 5%; }
+.sd-node-6 { top: 16%; left: 19%; }
+
+.sd-art-scanner {
+  position: absolute;
+  z-index: 4;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  background: var(--orange);
+  box-shadow: 0 0 12px #ff781f;
+  animation: sd-scan 5s ease-in-out infinite;
+}
+
+.sd-art-scanner-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: linear-gradient(
+    to bottom,
+    #ff781f25,
+    transparent
+  );
+}
+
+.sd-art-status {
+  position: absolute;
+  z-index: 5;
+  left: 17px;
+  bottom: 17px;
+  width: 185px;
+  padding: 11px;
+  border: 1px solid #423024;
+  background: #0b0b0bf2;
+}
+
+.sd-art-status-heading,
+.sd-art-status-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.sd-art-status-heading {
+  color: #b7a99e;
+  font-size: 8px;
+  letter-spacing: .8px;
+}
+
+.sd-art-status-heading svg {
+  color: var(--orange);
+}
+
+.sd-art-status-divider {
+  height: 1px;
+  margin: 9px 0;
+  background: #302720;
+}
+
+.sd-art-status-content {
+  justify-content: flex-start;
+  color: #eee8e1;
+  font-size: 9px;
+}
+
+.sd-art-status-content > span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  box-shadow: 0 0 8px var(--orange);
+}
+
+.sd-art-status > p {
+  margin-top: 7px;
+  color: #827970;
+  font-size: 8px;
+}
+
+.sd-art-screen-footer {
+  position: absolute;
+  right: 13px;
+  bottom: 17px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.sd-art-screen-footer > div:first-child {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: right;
+}
+
+.sd-art-screen-footer > div:first-child span {
+  color: #84776d;
+  font-size: 7px;
+  letter-spacing: .8px;
+}
+
+.sd-art-screen-footer > div:first-child strong {
+  color: #e7ded5;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.sd-art-screen-footer > div:last-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--orange);
+  font-size: 7px;
+}
+
+@keyframes sd-scan {
+  0% { top: 0; opacity: .5; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: .5; }
+}
+
+@keyframes sd-shield-pulse {
+  0%, 100% { box-shadow: 0 0 20px #ff781f15; }
+  50% { box-shadow: 0 0 42px #ff781f45; }
+}
+
+/* =========================================
+   SECURITY APPROACH PANEL
+========================================= */
+
+.sd-approach-panel {
+  gap: 15px;
+}
+
+.sd-approach-list {
+  display: grid;
+  gap: 0;
+}
+
+.sd-approach-item {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 13px;
+  padding: 16px 0;
+  border-bottom: 1px solid #34281f;
+}
+
+.sd-approach-icon {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #49301f;
+  border-radius: 5px;
+  color: var(--orange);
+  background: #1b120c;
+}
+
+.sd-approach-copy > span {
+  color: var(--orange);
+  font-size: 8px;
+  letter-spacing: 1px;
+}
+
+.sd-approach-copy h3 {
+  margin-top: 4px;
+  color: #f4f3f0;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.sd-approach-copy p {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.sd-approach-arrow {
+  color: #8c8178;
+}
+
+/* =========================================
+   WHY SAFEDEV
+========================================= */
+
+.sd-trust-section {
+  padding-top: 95px;
+  padding-bottom: 100px;
+}
+
+.sd-trust-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border: 1px solid var(--border);
+  background: #0d0d0d;
+}
+
+.sd-trust-item {
+  min-height: 190px;
+  padding: 24px;
+  border-right: 1px solid var(--border);
+}
+
+.sd-trust-item:last-child {
+  border-right: none;
+}
+
+.sd-trust-item > svg {
+  color: var(--orange);
+}
+
+.sd-trust-item h3 {
+  margin-top: 23px;
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.sd-trust-item p {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+
+/* =========================================
+   RESPONSIVE SECURITY ARTWORK
+========================================= */
+
+@media (max-width: 1000px) {
+  .sd-art-network {
+    right: -7%;
+    transform: translateY(-50%) scale(.85);
+  }
+
+  .sd-trust-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sd-trust-item:nth-child(2) {
+    border-right: none;
+  }
+
+  .sd-trust-item:nth-child(-n+2) {
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 760px) {
+  .sd-security-art {
+    height: 350px;
+  }
+
+  .sd-art-network {
+    right: -3%;
+    top: 45%;
+    transform: translateY(-50%) scale(.8);
+  }
+
+  .sd-art-message {
+    top: 20px;
+    left: 15px;
+  }
+
+  .sd-art-message h3 {
+    font-size: 27px;
+  }
+
+  .sd-art-status {
+    left: 10px;
+    bottom: 10px;
+    width: 160px;
+  }
+
+  .sd-art-screen-footer {
+    right: 9px;
+    bottom: 12px;
+  }
+
+  .sd-art-screen-footer > div:last-child {
+    display: none;
+  }
+
+  .sd-trust-section {
+    padding-top: 70px;
+    padding-bottom: 75px;
+  }
+
+  .sd-trust-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sd-trust-item,
+  .sd-trust-item:nth-child(2) {
+    min-height: 150px;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sd-trust-item:last-child {
+    border-bottom: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sd-art-scanner,
+  .sd-art-shield {
+    animation: none;
+  }
+}
+
+
+/* =========================================
+   HOMEPAGE HERO - HORIZONTAL LAYOUT
+========================================= */
+
+/* Desktop: wider layout, animation shifted right */
+@media (min-width: 761px) {
+  .home-hero {
+    width: min(1360px, calc(100% - 80px));
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: 35px;
+  }
+
+  .home-visual {
+    width: 100%;
+    transform: translateX(25px);
+  }
+
+  .sd-security-art {
+    width: 100%;
+    height: 420px;
+  }
+}
+
+/* Tablet: keep text and animation side by side */
+@media (min-width: 651px) and (max-width: 760px) {
+  .home-hero {
+    width: calc(100% - 40px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 14px;
+    padding-top: 55px;
+    padding-bottom: 85px;
+  }
+
+  .home-hero h1 {
+    font-size: 36px;
+    letter-spacing: -1.8px;
+  }
+
+  .home-description {
+    font-size: 11px;
+    line-height: 1.8;
+  }
+
+  .home-visual {
+    width: 100%;
+    transform: translateX(8px);
+  }
+
+  .sd-security-art {
+    height: 340px;
+    padding: 10px;
+  }
+
+  .sd-art-network {
+    right: -15%;
+    transform: translateY(-50%) scale(.75);
+  }
+
+  .sd-art-message {
+    left: 12px;
+  }
+
+  .sd-art-message h3 {
+    font-size: 23px;
+  }
+
+  .sd-art-status {
+    width: 145px;
+    left: 8px;
+    bottom: 8px;
+  }
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 650px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+    gap: 35px;
+  }
+
+  .home-visual {
+    transform: none;
+  }
+
+  .sd-security-art {
+    height: 350px;
+  }
+}
+
+/* =========================================
+   SAFEDEV HERO - TEXT DOMINANT LAYOUT
+========================================= */
+
+@media (min-width: 761px) {
+  .home-hero {
+    width: min(1360px, calc(100% - 80px));
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 0.65fr);
+    gap: 35px;
+    min-height: 650px;
+  }
+
+  /* Wider heading */
+  .home-hero h1 {
+    font-size: clamp(58px, 5.4vw, 76px);
+    line-height: 1.08;
+    letter-spacing: -3.5px;
+    white-space: nowrap;
+  }
+
+  /* Wider paragraph */
+  .home-description {
+    max-width: 720px;
+    font-size: 15px;
+    line-height: 1.9;
+  }
+
+  /* Smaller visual on the right */
+  .home-visual {
+    width: 100%;
+    max-width: 350px;
+    justify-self: end;
+    transform: translateX(0);
+  }
+
+  .sd-security-art {
+    width: 100%;
+    height: 310px;
+    padding: 11px;
+  }
+
+  .sd-art-network {
+    transform: translateY(-50%) scale(.78);
+    right: -8%;
+  }
+
+  .sd-art-message h3 {
+    font-size: 25px;
+  }
+
+  .sd-art-status {
+    width: 155px;
+    padding: 9px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 651px) and (max-width: 1000px) {
+  .home-hero {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, .6fr);
+    gap: 20px;
+  }
+
+  .home-hero h1 {
+    font-size: 48px;
+    white-space: normal;
+  }
+
+  .home-description {
+    max-width: 100%;
+    font-size: 12px;
+  }
+
+  .home-visual {
+    max-width: 260px;
+  }
+
+  .sd-security-art {
+    height: 280px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 650px) {
+  .home-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(38px, 9vw, 52px);
+    white-space: normal;
+  }
+
+  .home-description {
+    max-width: 100%;
+  }
+
+  .home-visual {
+    max-width: 100%;
+    justify-self: stretch;
+  }
+
+  .sd-security-art {
+    height: 320px;
+  }
+}
+
+/* =========================================
+   SAFEDEV.AI - FINAL HERO LAYOUT
+========================================= */
+
+@media (min-width: 1001px) {
+  .home-hero {
+    width: min(1600px, calc(100% - 100px));
+    min-height: 620px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: center;
+    gap: 65px;
+    padding-top: 65px;
+    padding-bottom: 85px;
+  }
+
+  .home-copy {
+    min-width: 0;
+  }
+
+  .home-hero h1 {
+    max-width: 850px;
+    margin-top: 25px;
+    font-size: clamp(60px, 5vw, 76px);
+    line-height: 1.08;
+    letter-spacing: -3.5px;
+    white-space: normal;
+  }
+
+  .home-description {
+    max-width: 850px;
+    margin-top: 25px;
+    font-size: 15px;
+    line-height: 1.9;
+  }
+
+  .home-actions {
+    margin-top: 28px;
+  }
+
+  .home-visual {
+    width: 100%;
+    max-width: 320px;
+    justify-self: end;
+    transform: none;
+  }
+
+  .sd-security-art {
+    width: 100%;
+    height: 280px;
+    padding: 11px;
+  }
+
+  /* Keep the illustration behind its text */
+  .sd-art-network {
+    width: 190px;
+    height: 190px;
+    top: 53%;
+    right: -8%;
+    transform: translateY(-50%) scale(.85);
+  }
+
+  .sd-art-message {
+    top: 25px;
+    left: 15px;
+    max-width: 155px;
+  }
+
+  .sd-art-message h3 {
+    font-size: 23px;
+    line-height: 1.15;
+  }
+
+  .sd-art-message p {
+    max-width: 145px;
+    font-size: 8px;
+  }
+
+  .sd-art-status {
+    left: 12px;
+    bottom: 12px;
+    width: 145px;
+    padding: 8px;
+  }
+
+  .sd-art-screen-footer {
+    display: none;
+  }
+
+  .art-caption {
+    font-size: 8px;
+  }
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (min-width: 651px) and (max-width: 1000px) {
+  .home-hero {
+    width: calc(100% - 60px);
+    grid-template-columns: minmax(0, 1fr) 260px;
+    gap: 25px;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(43px, 5vw, 58px);
+    letter-spacing: -2px;
+    white-space: normal;
+  }
+
+  .home-description {
+    max-width: 100%;
+    font-size: 13px;
+  }
+
+  .home-visual {
+    max-width: 260px;
+    transform: none;
+  }
+
+  .sd-security-art {
+    height: 260px;
+  }
+
+  .sd-art-network {
+    transform: translateY(-50%) scale(.7);
+    right: -15%;
+  }
+
+  .sd-art-message h3 {
+    font-size: 21px;
+  }
+
+  .sd-art-screen-footer {
+    display: none;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 650px) {
+  .home-hero {
+    width: calc(100% - 40px);
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding-top: 55px;
+    padding-bottom: 85px;
+  }
+
+  .home-hero h1 {
+    font-size: clamp(38px, 9vw, 52px);
+    line-height: 1.12;
+    letter-spacing: -2px;
+    white-space: normal;
+  }
+
+  .home-description {
+    max-width: 100%;
+    font-size: 13px;
+    line-height: 1.85;
+  }
+
+  .home-visual {
+    width: 100%;
+    max-width: 100%;
+    transform: none;
+  }
+
+  .sd-security-art {
+    height: 320px;
+  }
+
+  .sd-art-screen-footer {
+    display: none;
+  }
+}
+
+/* ONLY ADJUST THE RIGHT-SIDE ANIMATION */
+
+@media (min-width: 1001px) {
+  .home-visual {
+    max-width: 420px;       /* Was 320px */
+    width: 100%;
+    justify-self: end;
+    transform: translateY(-30px);
+  }
+
+  .sd-security-art {
+    width: 100%;
+    height: 355px;          /* Was 280px */
+  }
+
+  .sd-art-network {
+    transform: translateY(-50%) scale(1);
+  }
+
+  .sd-art-message h3 {
+    font-size: 27px;
+  }
+}
+
+@media (min-width: 651px) and (max-width: 1000px) {
+  .home-visual {
+    max-width: 300px;
+    transform: translateY(-20px);
+  }
+
+  .sd-security-art {
+    height: 300px;
+  }
+}
+
+/* FIX: RIGHT ANIMATION ONLY — DO NOT CHANGE HERO GRID */
+
+@media (min-width: 1001px) {
+  .home-visual {
+    width: 100%;
+    max-width: 320px;
+    justify-self: end;
+    transform: translateY(-30px);
+  }
+
+  .sd-security-art {
+    width: 100%;
+    height: 340px;
+  }
+
+  .sd-art-network {
+    width: 190px;
+    height: 190px;
+    right: -8%;
+    transform: translateY(-50%) scale(.85);
+  }
+
+  .sd-art-screen-footer {
+    display: none;
+  }
+}
+
+@media (min-width: 1001px) {
+  .home-visual {
+    width: 100%;
+    max-width: 380px;
+    min-width: 0;
+    justify-self: end;
+    transform: translateY(-30px);
+  }
+
+  .sd-security-art {
+    width: 100%;
+    height: 340px;
+  }
+
+  .sd-art-network {
+    transform: translateY(-50%) scale(.85);
+  }
+
+  .sd-art-screen-footer {
+    display: none;
+  }
+}
+
+.home-hero {
+  grid-template-columns: minmax(0, 1fr) 380px;
+}
+
+/* SOLUTIONS PAGE - BALANCED HERO */
+
+.page-hero.section-shell {
+  width: min(1500px, calc(100% - 100px));
+  align-items: center;
+  text-align: center;
+  background-image:
+    radial-gradient(
+      ellipse at 50% 30%,
+      #211309,
+      transparent 60%
+    );
+}
+
+.page-hero .eyebrow {
+  justify-content: center;
+}
+
+.page-hero h1 {
+  max-width: 100%;
+}
+
+.page-hero > p {
+  max-width: 850px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.page-hero .button-primary {
+  align-self: center;
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+  .page-hero.section-shell {
+    width: calc(100% - 40px);
+  }
+
+  .page-hero > p {
+    max-width: 100%;
+  }
+}
+.nav-links a {
+  color: #aaa7a3;
+  transition: color 600ms ease;
+}
+
+.nav-links a.active {
+  color: var(--orange);
+}
+
+.nav-links a:hover {
+  color: var(--orange);
+}
+.nav-links a {
+  color: #aaa7a3;
+  transition: color 600ms ease;
+}
+
+.nav-links a.active {
+  color: var(--orange);
+}
+
+.nav-links a:hover {
+  color: var(--orange);
+}
+
+/* =========================================
+   SAFEDEV.AI - ACTIVE NAVIGATION
+========================================= */
+
+.nav-links a {
+  color: #aaa7a3;
+  transition: color 600ms ease;
+}
+
+/* Keep the current page orange */
+.nav-links a.active,
+.nav-links a.active:hover {
+  color: var(--orange) !important;
+}
+
+/* Other links turn orange on hover */
+.nav-links a:hover {
+  color: var(--orange);
+}
+/* Make both homepage buttons identical */
+.home-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.home-actions a {
+  width: 220px;
+  height: 60px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  background: #ff781f !important;
+  color: #080808 !important;
+  border: 1px solid #ff781f !important;
+  border-radius: 8px;
+  text-decoration: none;
+}
+
+.home-actions a:hover {
+  background: #ff9147 !important;
+  border-color: #ff9147 !important;
+  color: #080808 !important;
+}
+/* Bottom CTA section spacing */
+.bottom-cta {
+  padding-top: 70px !important;
+  margin-top: 0 !important;
+}
+
+/* Align both CTA buttons */
+.bottom-cta-inner .home-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.bottom-cta-inner .home-actions a {
+  width: 260px;
+  height: 82px;
+  min-height: 82px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  transform: none;
+}
+/* Bottom CTA - compact spacing */
+.bottom-cta {
+  padding-top: 25px !important;
+  padding-bottom: 35px !important;
+  margin-top: 0 !important;
+}
+
+.bottom-cta-inner .home-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+}
+
+.bottom-cta-inner .home-actions a {
+  width: 220px;
+  height: 58px;
+  min-height: 58px;
+  padding: 0 18px;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  transform: none;
+}
+.principle-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+@media (max-width: 700px) {
+  .principle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Reduce excessive spacing between content sections */
+.page-content {
+  padding-top: 65px !important;
+  padding-bottom: 65px !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Tighten the gap between Our Approach and What We Stand For */
+.page-content + .page-content {
+  padding-top: 35px !important;
+}
+
+/* Reduce spacing between section heading and cards */
+.page-content .section-heading {
+  margin-bottom: 35px !important;
+}
+
+/* Mobile spacing */
+@media (max-width: 700px) {
+  .page-content {
+    padding-top: 45px !important;
+    padding-bottom: 45px !important;
+  }
+
+  .page-content + .page-content {
+    padding-top: 25px !important;
+  }
+}
+
+/* FIX EXISTING MODEL INSIGHTS SECTION */
+
+.simulation-insights {
+  width: 100%;
+  padding: 35px 0 55px;
+  overflow: hidden;
+}
+
+.simulation-insights-inner {
+  width: min(1400px, calc(100% - 100px));
+  margin: 0 auto;
+}
+
+.simulation-disclaimer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 35px;
+}
+
+.simulation-disclaimer p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.simulation-insights-content {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.8fr);
+  align-items: center;
+  gap: 50px;
+}
+
+.simulation-insights-copy {
+  min-width: 0;
+}
+
+.simulation-insights-copy h2 {
+  font-size: clamp(34px, 3.5vw, 48px);
+  line-height: 1.15;
+  margin: 12px 0;
+}
+
+.simulation-insights-copy > p {
+  max-width: 600px;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 12px 0 20px;
+}
+
+.simulation-insights-visual {
+  width: 100%;
+  min-width: 0;
+  min-height: 230px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 800px) {
+  .simulation-insights-inner {
+    width: calc(100% - 40px);
+  }
+
+  .simulation-insights-content {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+}
+
+@media (max-width: 500px) {
+  .simulation-insights {
+    padding: 25px 0 40px;
+  }
+
+  .simulation-insights-copy h2 {
+    font-size: 34px;
+  }
+}
+
+.simx-visualization-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 25px;
+  padding-bottom: 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.simx-visualization-footer h2 {
+  margin: 8px 0 0;
+  font-size: 27px;
+  line-height: 1.2;
+}
+
+.simx-visualization-label {
+  color: var(--orange, #ff781f);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+}
+
+.simx-visualization-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: color 250ms ease;
+}
+
+.simx-visualization-btn:hover {
+  color: var(--orange, #ff781f);
+}
+
+@media (max-width: 600px) {
+  .simx-visualization-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+/* Centered Model Insights CTA */
+
+.simx-visualization-footer {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  padding-top: 25px;
+  padding-bottom: 30px;
+}
+
+.simx-visualization-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.simx-visualization-label {
+  color: var(--orange, #ff781f);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+}
+
+.simx-visualization-content h2 {
+  margin: 8px 0;
+  font-size: 27px;
+}
+
+.simx-visualization-content p {
+  margin: 4px 0 15px;
+  color: #aaa7a3;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.simx-visualization-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  width: 190px;
+  height: 44px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  background: var(--orange, #ff781f);
+  color: #080808;
+  border: 1px solid var(--orange, #ff781f);
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 250ms ease;
+}
+
+.simx-visualization-btn:hover {
+  background: #ff9147;
+}
+
+/* =========================================
+   SIMULATION PAGE - SPACING REFINEMENT
+========================================= */
+
+/* Header spacing */
+.simx-header {
+  padding-top: 55px;
+  padding-bottom: 45px;
+}
+
+.simx-heading-row {
+  margin-top: 25px;
+}
+
+/* Dashboard overall spacing */
+.simx-dashboard {
+  padding-top: 20px;
+  padding-bottom: 45px;
+}
+
+/* Overview cards */
+.simx-overview {
+  margin-bottom: 35px;
+  gap: 18px;
+}
+
+/* Connection status */
+.simx-dashboard > div:not(.simx-overview) {
+  margin-bottom: 30px;
+}
+
+/* Network topology */
+.simx-network-panel {
+  margin-top: 20px;
+  margin-bottom: 55px;
+}
+
+.simx-panel-heading {
+  margin-bottom: 28px;
+}
+
+/* System directory */
+.simx-systems-section {
+  margin-top: 45px;
+  margin-bottom: 35px;
+}
+
+.simx-system-grid {
+  margin-top: 25px;
+  gap: 18px;
+}
+
+/* Selected system information */
+.simx-selection-note {
+  margin-top: 25px;
+  margin-bottom: 25px;
+}
+
+/* Bottom System Insights */
+.simx-visualization-footer {
+  margin-top: 25px;
+  padding-top: 55px;
+  padding-bottom: 55px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.simx-visualization-content h2 {
+  margin-top: 14px;
+  margin-bottom: 12px;
+}
+
+.simx-visualization-content p {
+  margin-bottom: 22px;
+}
+
+/* Responsive spacing */
+@media (max-width: 768px) {
+  .simx-header {
+    padding-top: 35px;
+    padding-bottom: 30px;
+  }
+
+  .simx-dashboard {
+    padding-top: 15px;
+    padding-bottom: 30px;
+  }
+
+  .simx-overview {
+    margin-bottom: 25px;
+    gap: 12px;
+  }
+
+  .simx-network-panel {
+    margin-bottom: 40px;
+  }
+
+  .simx-systems-section {
+    margin-top: 30px;
+  }
+
+  .simx-visualization-footer {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+}
+/* Simulation page - balanced spacing */
+
+.simx-header {
+  padding-top: 35px;
+  padding-bottom: 25px;
+}
+
+.simx-heading-row {
+  margin-top: 15px;
+}
+
+.simx-dashboard {
+  padding-top: 10px;
+  padding-bottom: 25px;
+}
+
+.simx-overview {
+  margin-bottom: 22px;
+  gap: 14px;
+}
+
+.simx-network-panel {
+  margin-top: 12px;
+  margin-bottom: 30px;
+}
+
+.simx-panel-heading {
+  margin-bottom: 18px;
+}
+
+.simx-systems-section {
+  margin-top: 25px;
+  margin-bottom: 20px;
+}
+
+.simx-system-grid {
+  margin-top: 18px;
+  gap: 14px;
+}
+
+.simx-selection-note {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.simx-visualization-footer {
+  margin-top: 10px;
+  padding-top: 35px;
+  padding-bottom: 35px;
+}
+
+.simx-visualization-content h2 {
+  margin: 10px 0;
+}
+
+.simx-visualization-content p {
+  margin-bottom: 15px;
+}
+/* Fix clipped system notifications in network topology */
+
+.simx-network-panel {
+  overflow: visible !important;
+  position: relative;
+}
+
+.simx-network-panel,
+.simx-network-panel * {
+  overflow-anchor: none;
+}
+
+.simx-network-panel .simx-panel-heading {
+  position: relative;
+  z-index: 5;
+}
+
+/* Keep system popups above topology nodes */
+.simx-network-panel [class*="tooltip"],
+.simx-network-panel [class*="notification"],
+.simx-network-panel [class*="popup"] {
+  position: relative;
+  z-index: 20;
+}
+/* Notification positioning fixes */
+
+.simx-node-preview--below {
+  top: calc(100% + 10px);
+  bottom: auto;
+}
+
+/* Keep left-side notifications inside the topology */
+.simx-node-preview--left {
+  left: 0;
+  transform: none;
+}
+
+/* Keep right-side notifications inside the topology */
+.simx-node-preview--right {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* Center notifications for middle computers */
+.simx-node-preview--center {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+/* Always display the system popup above its node */
+.simx-node-preview--above {
+  top: auto;
+  bottom: calc(100% + 10px);
+}
+
+/* Keep popups inside the horizontal boundaries */
+.simx-node-preview--left {
+  left: 0;
+  right: auto;
+  transform: none;
+}
+
+.simx-node-preview--right {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.simx-node-preview--center {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}
+.simx-topology {
+  position: relative;
+  width: 100%;
+  height: 510px;
+  margin-top: 20px;
+  overflow: visible;
+  border: 1px solid #242424;
+  border-radius: 12px;
+  background: #090909;
+}
+.simx-node-preview {
+  position: absolute;
+  top: calc(100% + 10px);
+  bottom: auto;
+  left: 50%;
+  right: auto;
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+  gap: 7px;
+  width: 180px;
+  padding: 13px;
+  transform: translateX(-50%);
+  border: 1px solid #3a3026;
+  border-radius: 10px;
+  background: #17130f;
+  box-shadow: 0 10px 30px #000;
+  text-align: left;
+}
+.simx-node-preview--below {
+  top: calc(100% + 10px);
+  bottom: auto;
+}
+
+.simx-node-preview--left {
+  left: 0;
+  right: auto;
+  transform: none;
+}
+
+.simx-node-preview--right {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.simx-node-preview--center {
+  left: 50%;
+  right: auto;
+  transform: translateX(-50%);
+}

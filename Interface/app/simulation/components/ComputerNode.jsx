@@ -2,13 +2,11 @@
 "use client";
 
 import Link from "next/link";
-import { Monitor, ArrowUpRight } from "lucide-react";
+import { Monitor } from "lucide-react";
 
 function getSystemState(system) {
-  if (!system) return "pending";
-
   if (
-    system.is_attack === true ||
+    system.is_attack ||
     system.status === "ATTACK" ||
     (system.prediction && system.prediction !== "BENIGN")
   ) {
@@ -33,12 +31,12 @@ export default function ComputerNode({
 }) {
   const state = getSystemState(system);
 
-  const statusText =
-    state === "normal"
-      ? "NORMAL TRAFFIC"
-      : state === "attack"
-        ? "ATTACK DETECTED"
-        : "AWAITING PREDICTION";
+  const statusColor =
+    state === "attack"
+      ? "#ff4545"
+      : state === "normal"
+        ? "#20d878"
+        : "#a5a5a5";
 
   return (
     <Link
@@ -49,45 +47,22 @@ export default function ComputerNode({
       style={{
         left: `${position.x}%`,
         top: `${position.y}%`,
-        "--node-status-color":
-          state === "normal"
-            ? "#22c55e"
-            : state === "attack"
-              ? "#ef4444"
-              : "#888888",
+        "--node-status-color": statusColor,
       }}
-      onMouseEnter={() => onSelect?.(system.id)}
-      onMouseLeave={() => onSelect?.(null)}
-      onFocus={() => onSelect?.(system.id)}
-      onBlur={() => onSelect?.(null)}
-      aria-label={`Open ${system.id} monitoring details. ${statusText}`}
+      onClick={() => onSelect?.(system.id)}
+      aria-label={`Open ${system.name}`}
     >
       <span className="simx-node-icon">
         <Monitor size={23} />
         <span className="simx-node-pulse" />
       </span>
 
-      <span className="simx-node-id">{system.id}</span>
-      <span className="simx-node-role">{system.role}</span>
+      <span className="simx-node-id">
+        {system.id}
+      </span>
 
-      <span className="simx-node-preview">
-        <strong>{system.name}</strong>
-        <span>{system.role}</span>
-
-        <span className="simx-preview-status">
-          <i />
-          {statusText}
-        </span>
-
-        {system.prediction && (
-          <span className="simx-preview-prediction">
-            Prediction: {system.prediction}
-          </span>
-        )}
-
-        <span className="simx-preview-action">
-          View system <ArrowUpRight size={13} />
-        </span>
+      <span className="simx-node-role">
+        {system.role}
       </span>
     </Link>
   );

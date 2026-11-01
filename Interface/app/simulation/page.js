@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 import {
   Activity,
@@ -12,7 +12,6 @@ import {
   Network,
   Shield,
   RefreshCw,
-  ChartNoAxesCombined,
 } from "lucide-react";
 
 import SiteChrome from "../components/SiteChrome";
@@ -23,13 +22,40 @@ const API = "http://127.0.0.1:8000";
 
 export default function SimulationPage() {
   const [selectedId, setSelectedId] = useState(null);
+  const selectionTimeoutRef = useRef(null);
 
+  // Keep the selected-system bar visible for 10 seconds after hover ends.
+  const handleSelection = (id) => {
+    if (selectionTimeoutRef.current) {
+      clearTimeout(selectionTimeoutRef.current);
+      selectionTimeoutRef.current = null;
+    }
+
+    if (id) {
+      setSelectedId(id);
+      return;
+    }
+
+    selectionTimeoutRef.current = setTimeout(() => {
+      setSelectedId(null);
+      selectionTimeoutRef.current = null;
+    }, 10000);
+  };
+
+  // Clear the pending timeout when the page unmounts.
+  useEffect(() => {
+    return () => {
+      if (selectionTimeoutRef.current) {
+        clearTimeout(selectionTimeoutRef.current);
+      }
+    };
+  }, []);
   const [modelSystems, setModelSystems] = useState([]);
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Initialize or retrieve the ten model-driven systems.
+  // Initialize or retrieve the ten connected systems.
   const loadSimulation = useCallback(async () => {
     try {
       setLoading(true);
@@ -47,7 +73,7 @@ export default function SimulationPage() {
       let data;
 
       if (systemsResponse.status === 409) {
-        // Simulation has not been initialized yet.
+        // Initialize the simulation if it has not started.
         const startResponse = await fetch(
           `${API}/simulation/start`,
           { method: "POST" }
@@ -57,7 +83,7 @@ export default function SimulationPage() {
 
         if (!startResponse.ok) {
           throw new Error(
-            data.detail || "Simulation initialization failed."
+            data.detail || "System initialization failed."
           );
         }
       } else {
@@ -85,7 +111,7 @@ export default function SimulationPage() {
     loadSimulation();
   }, [loadSimulation]);
 
-  // Match the original frontend computer IDs with backend IDs.
+  // Match frontend computer IDs with backend system IDs.
   const displayedSystems = initialSystems.map((system) => {
     const modelSystem = modelSystems.find(
       (item) => item.system_id === system.id
@@ -93,15 +119,12 @@ export default function SimulationPage() {
 
     return {
       ...system,
-
       prediction: modelSystem?.prediction ?? null,
       status: modelSystem?.status ?? "PENDING",
       color: modelSystem?.color ?? "grey",
       actualLabel: modelSystem?.actual_label ?? null,
-
       features: modelSystem?.features ?? {},
       isAttack: modelSystem?.is_attack ?? false,
-
       modelConnected: Boolean(modelSystem),
     };
   });
@@ -145,13 +168,13 @@ export default function SimulationPage() {
               </h1>
 
               <p>
-                Monitor ten connected systems using predictions
-                from the trained LightGBM model.
+                Monitor connected systems, network activity
+                and system security status.
               </p>
             </div>
 
             <span className="simx-demo-badge">
-              <i /> ML SIMULATION
+              <i /> SYSTEM MONITORING
             </span>
           </div>
         </section>
@@ -203,7 +226,7 @@ export default function SimulationPage() {
               </span>
 
               <div>
-                <small>MODEL PREDICTIONS</small>
+                <small>SYSTEM STATUS</small>
 
                 <strong className="simx-overview-text">
                   {loading
@@ -217,7 +240,7 @@ export default function SimulationPage() {
 
           </div>
 
-          {/* MODEL STATUS */}
+          {/* CONNECTION STATUS */}
           <div
             style={{
               display: "flex",
@@ -237,7 +260,7 @@ export default function SimulationPage() {
               >
                 ●{" "}
                 {connected
-                  ? "LightGBM API Connected"
+                  ? "Backend Connected"
                   : "Backend Disconnected"}
               </span>
 
@@ -265,7 +288,7 @@ export default function SimulationPage() {
               }}
             >
               <RefreshCw size={15} />
-              {loading ? "Loading..." : "Refresh predictions"}
+              {loading ? "Loading..." : "Refresh Systems"}
             </button>
           </div>
 
@@ -288,15 +311,15 @@ export default function SimulationPage() {
               <span className="simx-live-indicator">
                 <i />
                 {connected
-                  ? "MODEL CONNECTED"
-                  : "WAITING FOR MODEL"}
+                  ? "SYSTEMS CONNECTED"
+                  : "WAITING FOR CONNECTION"}
               </span>
             </div>
 
             <NetworkTopology
               systems={displayedSystems}
               selectedId={selectedId}
-              onSelect={setSelectedId}
+              onSelect={handleSelection}
             />
 
             <div className="simx-topology-footer">
@@ -318,8 +341,10 @@ export default function SimulationPage() {
           </section>
 
           {/* SYSTEM DIRECTORY */}
-          <section className="simx-systems-section">
-
+          <section
+            className="simx-systems-section"
+            id="system-directory"
+          >
             <div className="simx-panel-heading">
               <div>
                 <div className="simx-panel-label">
@@ -340,10 +365,10 @@ export default function SimulationPage() {
                 <Link
                   key={system.id}
                   href={`/simulation/${system.id}`}
-                  onMouseEnter={() => setSelectedId(system.id)}
-                  onMouseLeave={() => setSelectedId(null)}
-                  onFocus={() => setSelectedId(system.id)}
-                  onBlur={() => setSelectedId(null)}
+                  onMouseEnter={() => handleSelection(system.id)}
+                  onMouseLeave={() => handleSelection(null)}
+                  onFocus={() => handleSelection(system.id)}
+                  onBlur={() => handleSelection(null)}
                   className={`simx-system-card ${
                     selectedId === system.id ? "active" : ""
                   }`}
@@ -365,12 +390,6 @@ export default function SimulationPage() {
                     <strong>{system.id}</strong>
 
                     <small>{system.role}</small>
-
-                    <small className="simx-system-state">
-                      {system.modelConnected
-                        ? system.prediction
-                        : "Awaiting prediction"}
-                    </small>
 
                     <small
                       style={{
@@ -402,12 +421,6 @@ export default function SimulationPage() {
               Selected: <strong>{selectedSystem.id}</strong> —{" "}
               {selectedSystem.role}
 
-              {selectedSystem.prediction && (
-                <span>
-                  {" "} | Prediction: {selectedSystem.prediction}
-                </span>
-              )}
-
               <Link href={`/simulation/${selectedSystem.id}`}>
                 Open details <ArrowUpRight size={14} />
               </Link>
@@ -416,43 +429,30 @@ export default function SimulationPage() {
 
         </section>
 
-        {/* DISCLAIMER */}
-        <section className="section-shell simx-disclaimer">
-          <Shield size={17} />
-
-          <p>
-            Predictions are generated by the trained LightGBM
-            model using records from the processed network traffic
-            dataset. This is a dataset-driven simulation, not a
-            live network monitoring connection.
-          </p>
-        </section>
-
-        {/* VISUALIZATION NAVIGATION - BOTTOM */}
+        {/* SYSTEM INSIGHTS */}
         <section className="section-shell simx-visualization-footer">
+          <div className="simx-visualization-content">
 
-          <div>
             <span className="simx-visualization-label">
-              MODEL INSIGHTS
+              SYSTEM INSIGHTS
             </span>
 
-            <h2>Explore Network Analytics</h2>
+            <h2>Explore System Monitoring</h2>
 
             <p>
-              Understand network traffic patterns through PCA,
-              t-SNE, class distribution and feature correlation.
+              Get a closer look at connected systems and their current status.
             </p>
+
+            <Link
+              href="#system-directory"
+              className="simx-visualization-btn"
+            >
+              <Monitor size={16} />
+              View System Details
+              <ArrowUpRight size={15} />
+            </Link>
+
           </div>
-
-          <Link
-            href="/visualizations"
-            className="simx-visualization-btn"
-          >
-            <ChartNoAxesCombined size={17} />
-            View Visualizations
-            <ArrowUpRight size={16} />
-          </Link>
-
         </section>
 
       </main>

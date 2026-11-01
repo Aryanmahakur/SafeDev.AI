@@ -1,51 +1,25 @@
-
-# Python environment
+# Python
 .venv/
-venv/
-env/
 __pycache__/
-*.py[cod]
-
-# Jupyter
-.ipynb_checkpoints/
+*.pyc
 
 # Next.js
 Interface/node_modules/
 Interface/.next/
-Interface/out/
 
-# Environment variables and secrets
-.env
-.env.*
-!.env.example
-
-# IDE
-.vscode/
-.idea/
-
-# Logs and temporary files
-*.log
-*.tmp
-
-# Large datasets - don't upload to normal Git
+# Datasets
 *.csv
 *.parquet
-*.feather
 
-# Model artifacts - manage separately if large
+# Large ML artifacts
+*.npy
+*.npz
 *.joblib
 *.pkl
-*.pickle
-*.h5
-*.onnx
-*.pt
-*.pth
 
-# Python packaging
-build/
-dist/
-*.egg-info/
+# Environment
+.env
+.env.*
 
-# OS files
-.DS_Store
-Thumbs.db
+# Cache
+.ipynb_checkpoints/

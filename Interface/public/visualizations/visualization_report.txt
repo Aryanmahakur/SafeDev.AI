@@ -1,0 +1,35 @@
+NETWORK TRAFFIC DIMENSIONALITY REDUCTION REPORT
+=======================================================
+
+Complete dataset records: 2520798
+Original feature count: 70
+Usable numeric features: 66
+Visualization sample size: 3668
+Traffic classes: 15
+
+PCA RESULTS
+------------------------------
+PC1: 20.1568%
+PC2: 15.0244%
+PC3: 12.4321%
+PC4: 7.3221%
+PC5: 5.9980%
+PC6: 4.4290%
+PC7: 4.0081%
+PC8: 3.8517%
+PC9: 3.4740%
+PC10: 3.1401%
+
+Cumulative explained variance: 79.8363%
+
+CLUSTER SEPARATION
+------------------------------
+PCA 2D silhouette score: -0.0363
+t-SNE 2D silhouette score: -0.0315
+
+Metric sample size: 2500
+
+IMPORTANT INTERPRETATION:
+Silhouette scores were calculated using the known dataset labels in each 2D representation.
+t-SNE changes distances and density, so its silhouette score should be interpreted cautiously.
+These scores are exploratory visualization metrics, not LightGBM classification metrics.

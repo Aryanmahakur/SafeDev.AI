@@ -3250,3 +3250,89 @@ a:focus-visible {
 .simx-traffic-packet {
   animation: simx-packet-glow 1.5s ease-in-out infinite;
 }
+
+/* NETWORK VISUALIZATION PAGE */
+
+.visual-page {
+  min-height: 100vh;
+  padding: 45px 5%;
+  background: #080808;
+  color: #f5f5f5;
+}
+
+.visual-header {
+  max-width: 850px;
+  margin-bottom: 35px;
+}
+
+.visual-eyebrow {
+  color: #ff922e;
+  font-size: 11px;
+  letter-spacing: 2px;
+  font-weight: 700;
+}
+
+.visual-header h1 {
+  margin: 14px 0;
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+}
+
+.visual-header p {
+  color: #999;
+  line-height: 1.7;
+  font-size: 14px;
+}
+
+.visual-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.visual-card {
+  overflow: hidden;
+  border: 1px solid #282828;
+  border-radius: 12px;
+  background: #101010;
+  transition: border-color 0.2s ease;
+}
+
+.visual-card:hover {
+  border-color: rgba(255, 146, 46, 0.55);
+}
+
+.visual-image {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  padding: 12px;
+  background: #080808;
+}
+
+.visual-content {
+  padding: 18px 20px 22px;
+}
+
+.visual-content h2 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.visual-content p {
+  margin: 0;
+  color: #999;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+@media (max-width: 768px) {
+  .visual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .visual-page {
+    padding: 30px 18px;
+  }
+}

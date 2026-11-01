@@ -1,6 +1,7 @@
 
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 
 import {
@@ -11,9 +12,8 @@ import {
   Network,
   Shield,
   RefreshCw,
+  ChartNoAxesCombined,
 } from "lucide-react";
-
-import Link from "next/link";
 
 import SiteChrome from "../components/SiteChrome";
 import NetworkTopology from "./components/NetworkTopology";
@@ -145,8 +145,8 @@ export default function SimulationPage() {
               </h1>
 
               <p>
-                Monitor ten connected systems using real-time
-                predictions from the trained LightGBM model.
+                Monitor ten connected systems using predictions
+                from the trained LightGBM model.
               </p>
             </div>
 
@@ -163,7 +163,10 @@ export default function SimulationPage() {
           <div className="simx-overview">
 
             <article className="simx-overview-card">
-              <span><Monitor size={18} /></span>
+              <span>
+                <Monitor size={18} />
+              </span>
+
               <div>
                 <small>REGISTERED SYSTEMS</small>
                 <strong>{displayedSystems.length}</strong>
@@ -171,7 +174,10 @@ export default function SimulationPage() {
             </article>
 
             <article className="simx-overview-card">
-              <span><Network size={18} /></span>
+              <span>
+                <Network size={18} />
+              </span>
+
               <div>
                 <small>NETWORK NODES</small>
                 <strong>{modelSystems.length}</strong>
@@ -179,7 +185,10 @@ export default function SimulationPage() {
             </article>
 
             <article className="simx-overview-card">
-              <span><Activity size={18} /></span>
+              <span>
+                <Activity size={18} />
+              </span>
+
               <div>
                 <small>NORMAL SYSTEMS</small>
                 <strong className="simx-overview-text">
@@ -189,7 +198,10 @@ export default function SimulationPage() {
             </article>
 
             <article className="simx-overview-card">
-              <span><Shield size={18} /></span>
+              <span>
+                <Shield size={18} />
+              </span>
+
               <div>
                 <small>MODEL PREDICTIONS</small>
 
@@ -223,7 +235,10 @@ export default function SimulationPage() {
                   fontSize: "13px",
                 }}
               >
-                ● {connected ? "LightGBM API Connected" : "Backend Disconnected"}
+                ●{" "}
+                {connected
+                  ? "LightGBM API Connected"
+                  : "Backend Disconnected"}
               </span>
 
               {error && (
@@ -272,7 +287,9 @@ export default function SimulationPage() {
 
               <span className="simx-live-indicator">
                 <i />
-                {connected ? "MODEL CONNECTED" : "WAITING FOR MODEL"}
+                {connected
+                  ? "MODEL CONNECTED"
+                  : "WAITING FOR MODEL"}
               </span>
             </div>
 
@@ -409,6 +426,33 @@ export default function SimulationPage() {
             dataset. This is a dataset-driven simulation, not a
             live network monitoring connection.
           </p>
+        </section>
+
+        {/* VISUALIZATION NAVIGATION - BOTTOM */}
+        <section className="section-shell simx-visualization-footer">
+
+          <div>
+            <span className="simx-visualization-label">
+              MODEL INSIGHTS
+            </span>
+
+            <h2>Explore Network Analytics</h2>
+
+            <p>
+              Understand network traffic patterns through PCA,
+              t-SNE, class distribution and feature correlation.
+            </p>
+          </div>
+
+          <Link
+            href="/visualizations"
+            className="simx-visualization-btn"
+          >
+            <ChartNoAxesCombined size={17} />
+            View Visualizations
+            <ArrowUpRight size={16} />
+          </Link>
+
         </section>
 
       </main>

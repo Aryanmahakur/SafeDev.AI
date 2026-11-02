@@ -4945,3 +4945,317 @@ a:focus-visible {
   right: auto;
   transform: translateX(-50%);
 }
+
+/* SAFEDEV.AI - Network topology visibility fix */
+
+.simx-network-panel {
+  display: block !important;
+  position: relative !important;
+  width: 100%;
+  min-width: 0;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.simx-topology {
+  display: block !important;
+  position: relative !important;
+  width: 100% !important;
+  min-width: 0;
+  height: 510px !important;
+  min-height: 510px !important;
+  overflow: visible !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background: #090909 !important;
+  z-index: 1;
+}
+
+.simx-topology-grid {
+  display: block !important;
+  position: absolute !important;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.simx-connections {
+  display: block !important;
+  position: absolute !important;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.simx-central-router {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 3 !important;
+}
+
+.simx-node {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 4 !important;
+}
+
+@media (max-width: 650px) {
+  .simx-topology {
+    height: 360px !important;
+    min-height: 360px !important;
+  }
+}
+.visualizations-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.visualization-card {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
+.visualization-card img {
+  width: 100%;
+  height: 320px;
+  object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .visualizations-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* SIDE-BY-SIDE COMPARISON GRAPHS */
+
+.visual-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.visual-comparison-column {
+  min-width: 0;
+  width: 100%;
+}
+
+.visual-comparison-column .visual-card {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.visual-comparison-column .visual-image {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .visual-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* COMPARISON GRAPHS — EQUAL WIDTH */
+
+.visual-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.visual-comparison-column {
+  min-width: 0;
+  width: 100%;
+}
+
+.visual-comparison-column .visual-card {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 768px) {
+  .visual-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* INDIVIDUAL GRAPH TITLES */
+
+.visual-card-heading {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  padding: 18px 22px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #292929;
+}
+
+.visual-card-heading h2 {
+  margin: 0;
+  color: #f5f5f5;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.35px;
+}
+
+/* GRAPH IMAGE */
+
+.visual-image {
+  position: relative;
+  width: 100%;
+  min-height: 350px;
+  overflow: hidden;
+}
+
+/* GRAPH DESCRIPTION */
+
+.visual-content {
+  padding: 20px 22px 24px;
+}
+
+.visual-subtitle {
+  margin: 0 0 16px;
+  line-height: 1.7;
+  color: #aaa;
+}
+
+.visual-meaning {
+  margin-top: 14px;
+  line-height: 1.7;
+}
+
+/* TWO COMPARISON GRAPHS */
+
+.visual-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+  width: 100%;
+  align-items: stretch;
+}
+
+.visual-comparison-column {
+  min-width: 0;
+  width: 100%;
+}
+
+.visual-comparison-column .visual-card {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+/* RESPONSIVE LAYOUT */
+
+@media (max-width: 768px) {
+  .visual-comparison-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* VERTICAL SPACING BETWEEN GRAPH CARDS */
+
+.visual-grid {
+  row-gap: 28px;
+}
+
+.visual-comparison-grid {
+  row-gap: 28px;
+}
+
+/* FORCE VERTICAL SPACE BETWEEN GRAPH SECTIONS */
+
+.visual-section + .visual-section {
+  margin-top: 35px !important;
+}
+
+/* SPACE BETWEEN ROWS INSIDE EACH GRAPH GRID */
+
+.visual-grid {
+  row-gap: 35px !important;
+}
+
+/* SPACE BETWEEN COMPARISON CARDS */
+
+.visual-comparison-grid {
+  gap: 35px !important;
+}
+
+/* NAVBAR HORIZONTAL ALIGNMENT — KEEP ORIGINAL SIZE */
+
+.navbar {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  /* Preserve original height and padding */
+}
+
+/* BRAND — LEFT */
+.navbar .brand {
+  justify-self: start;
+  margin: 0;
+}
+
+/* NAVIGATION — EXACT CENTER */
+.navbar .nav-links {
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* SIMULATION — RIGHT */
+.navbar .nav-cta {
+  justify-self: end;
+  margin: 0;
+}
+
+/* MOBILE */
+@media (max-width: 900px) {
+  .navbar {
+    display: flex !important;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+
+  .navbar .nav-links {
+    justify-content: center;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+/* MAKE PROJECT NAME MORE PROMINENT */
+
+.navbar .brand {
+  font-size: 25px !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.8px;
+  white-space: nowrap;
+}
+
+/* Keep all navigation elements unchanged */
+.navbar .nav-links a {
+  font-size: inherit;
+}
+
+.navbar .nav-cta {
+  font-size: inherit;
+}

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useMemo } from "react";
@@ -22,9 +21,11 @@ function getSystemState(system) {
   if (!system) return "pending";
 
   if (
+    system.isAttack === true ||
     system.is_attack === true ||
     system.status === "ATTACK" ||
-    (system.prediction && system.prediction !== "BENIGN")
+    (system.prediction &&
+      system.prediction !== "BENIGN")
   ) {
     return "attack";
   }
@@ -44,31 +45,30 @@ export default function NetworkTopology({
   selectedId = null,
   onSelect,
 }) {
-  const lines = useMemo(
-    () =>
-      positions.map((position, index) => ({
-        id: index,
-        x: position.x * 9,
-        y: position.y * 5.2,
-      })),
-    []
-  );
+  const nodes = useMemo(() => {
+    return systems.slice(0, positions.length).map((system, index) => ({
+      system,
+      position: positions[index],
+      state: getSystemState(system),
+    }));
+  }, [systems]);
 
   return (
     <div className="simx-topology">
+      {/* Background grid */}
       <div className="simx-topology-grid" />
 
+      {/* Network connection lines */}
       <svg
         className="simx-connections"
         viewBox="0 0 900 520"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
-        {systems.map((system, index) => {
-          const point = lines[index];
-          if (!point) return null;
+        {nodes.map(({ system, position, state }) => {
+          const x = position.x * 9;
+          const y = position.y * 5.2;
 
-          const state = getSystemState(system);
           const trafficColor =
             state === "normal"
               ? "#22c55e"
@@ -76,58 +76,27 @@ export default function NetworkTopology({
                 ? "#ef4444"
                 : "#888888";
 
-          const dx = point.x - 450;
-          const dy = point.y - 260;
-
           return (
-            <g key={system.id}>
-              {/* Connection belonging to this computer */}
-              <line
-                x1="450"
-                y1="260"
-                x2={point.x}
-                y2={point.y}
-                className={`simx-connection-line simx-connection-${state}`}
-                style={{
-                  stroke: trafficColor,
-                  opacity: state === "pending" ? 0.3 : 0.65,
-                }}
-              />
-
-              {/* Outgoing traffic: switch -> computer */}
-              <circle
-                r="4"
-                fill={trafficColor}
-                className="simx-traffic-packet"
-              >
-                <animateMotion
-                  dur={`${2.5 + (index % 4) * 0.6}s`}
-                  repeatCount="indefinite"
-                  path={`M 0 0 L ${dx} ${dy}`}
-                />
-              </circle>
-
-              {/* Incoming traffic: computer -> switch */}
-              <circle
-                cx={point.x}
-                cy={point.y}
-                r="3.5"
-                fill={trafficColor}
-                className="simx-traffic-packet"
-              >
-                <animateMotion
-                  dur={`${3 + (index % 3) * 0.7}s`}
-                  repeatCount="indefinite"
-                  path={`M 0 0 L ${-dx} ${-dy}`}
-                />
-              </circle>
-            </g>
+            <line
+              key={system.id}
+              x1="450"
+              y1="260"
+              x2={x}
+              y2={y}
+              className={`simx-connection-line simx-connection-${state}`}
+              style={{
+                stroke: trafficColor,
+                opacity: state === "pending" ? 0.4 : 0.75,
+              }}
+            />
           );
         })}
       </svg>
 
+      {/* Central network router */}
       <div className="simx-central-router">
         <span className="simx-router-glow" />
+
         <span className="simx-router-icon">
           <Router size={28} />
         </span>
@@ -141,16 +110,18 @@ export default function NetworkTopology({
         </div>
       </div>
 
-      {systems.map((system, index) => (
+      {/* Connected computer nodes */}
+      {nodes.map(({ system, position }) => (
         <ComputerNode
           key={system.id}
           system={system}
-          position={positions[index]}
+          position={position}
           selected={selectedId === system.id}
           onSelect={onSelect}
         />
       ))}
 
+      {/* Bottom caption */}
       <div className="simx-topology-caption">
         <Network size={14} />
         Prediction-driven network simulation · {systems.length} systems

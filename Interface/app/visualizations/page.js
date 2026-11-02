@@ -6,10 +6,9 @@ import SiteChrome from "../components/SiteChrome";
 
 const chartSections = [
   {
-    category: "DIMENSIONALITY REDUCTION",
     charts: [
       {
-        title: "PCA 2D Visualization",
+        title: "PCA — Principal Component Projection",
         file: "pca_2d_labelled.png",
         subtitle:
           "Visualizes how different network traffic classes are distributed across the first two principal components.",
@@ -17,28 +16,19 @@ const chartSections = [
           "Each point represents a network traffic record. Its colour identifies the original traffic class.",
       },
       {
-        title: "t-SNE 2D Visualization",
+        title: "t-SNE — Network Traffic Clustering",
         file: "tsne_2d_labelled.png",
         subtitle:
           "Maps similar network traffic records into nearby positions to reveal local patterns and clusters.",
         meaning:
           "Nearby points represent records with similar local neighbourhood structure.",
       },
-      {
-        title: "Feature Reduction Comparison",
-        file: "feature_reduction_comparison.png",
-        subtitle:
-          "Shows how the original network features are transformed into a smaller representation.",
-        meaning:
-          "Compares the original feature count, PCA components and two-dimensional visualization spaces.",
-      },
     ],
   },
   {
-    category: "PCA ANALYSIS",
     charts: [
       {
-        title: "PCA Scree Plot",
+        title: "PCA — Component-wise Explained Variance",
         file: "pca_scree_plot.png",
         subtitle:
           "Displays the percentage of variance captured by each principal component.",
@@ -46,7 +36,7 @@ const chartSections = [
           "Helps identify which principal components retain the most information.",
       },
       {
-        title: "Cumulative Explained Variance",
+        title: "PCA — Cumulative Information Retention",
         file: "pca_cumulative_variance.png",
         subtitle:
           "Shows how the retained information increases as more principal components are included.",
@@ -56,10 +46,9 @@ const chartSections = [
     ],
   },
   {
-    category: "NETWORK TRAFFIC ANALYSIS",
     charts: [
       {
-        title: "Traffic Class Distribution",
+        title: "Network Traffic Class Distribution",
         file: "class_distribution.png",
         subtitle:
           "Displays the number of records belonging to each normal and attack category.",
@@ -67,7 +56,7 @@ const chartSections = [
           "Highlights class imbalance in the CICIDS2017 dataset.",
       },
       {
-        title: "Feature Correlation Heatmap",
+        title: "Network Feature Correlation Analysis",
         file: "feature_correlation_heatmap.png",
         subtitle:
           "Shows the relationships between selected numerical network traffic features.",
@@ -76,20 +65,65 @@ const chartSections = [
       },
     ],
   },
+];
+
+const comparisonCharts = [
   {
-    category: "CLUSTER EVALUATION",
-    charts: [
-      {
-        title: "PCA vs t-SNE Cluster Separation",
-        file: "cluster_separation_comparison.png",
-        subtitle:
-          "Compares the silhouette scores of the PCA and t-SNE two-dimensional representations.",
-        meaning:
-          "A higher score indicates better separation and compactness according to the supplied class labels.",
-      },
-    ],
+    title: "Feature Dimensionality Reduction",
+    file: "feature_reduction_comparison.png",
+    subtitle:
+      "Shows how the original network features are transformed into a smaller representation.",
+    meaning:
+      "Compares the original feature count, PCA components and two-dimensional visualization spaces.",
+  },
+  {
+    title: "PCA vs t-SNE — Cluster Separation Analysis",
+    file: "cluster_separation_comparison.png",
+    subtitle:
+      "Compares the silhouette scores of the PCA and t-SNE two-dimensional representations.",
+    meaning:
+      "A higher score indicates better separation and compactness according to the supplied class labels.",
   },
 ];
+
+/* REUSABLE GRAPH CARD */
+function ChartCard({ chart }) {
+  return (
+    <article className="visual-card">
+
+      {/* GRAPH TITLE */}
+      <div className="visual-card-heading">
+        <h2>{chart.title}</h2>
+      </div>
+
+      {/* GRAPH IMAGE */}
+      <div className="visual-image">
+        <Image
+          src={`/visualizations/${chart.file}`}
+          alt={chart.title}
+          fill
+          sizes="(max-width: 768px) 100vw, 50vw"
+          style={{
+            objectFit: "contain",
+          }}
+        />
+      </div>
+
+      {/* GRAPH DESCRIPTION */}
+      <div className="visual-content">
+        <p className="visual-subtitle">
+          {chart.subtitle}
+        </p>
+
+        <div className="visual-meaning">
+          <span>WHAT THIS SHOWS</span>
+          <p>{chart.meaning}</p>
+        </div>
+      </div>
+
+    </article>
+  );
+}
 
 export default function VisualizationsPage() {
   return (
@@ -114,65 +148,35 @@ export default function VisualizationsPage() {
           </p>
         </header>
 
-        {/* CHART SECTIONS */}
-        {chartSections.map((section) => (
+        {/* MAIN GRAPHS */}
+        {chartSections.map((section, index) => (
           <section
             className="visual-section"
-            key={section.category}
+            key={index}
           >
-            <div className="visual-section-heading">
-              <span>{section.category}</span>
-              <div />
-            </div>
-
             <div className="visual-grid">
               {section.charts.map((chart) => (
-                <article
-                  className="visual-card"
+                <ChartCard
                   key={chart.file}
-                >
-                  <div className="visual-image">
-                    <Image
-                      src={`/visualizations/${chart.file}`}
-                      alt={chart.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 50vw"
-                      style={{
-                        objectFit: "contain",
-                      }}
-                    />
-                  </div>
-
-                  <div className="visual-content">
-                    <h2>{chart.title}</h2>
-
-                    <p className="visual-subtitle">
-                      {chart.subtitle}
-                    </p>
-
-                    <div className="visual-meaning">
-                      <span>WHAT THIS SHOWS</span>
-                      <p>{chart.meaning}</p>
-                    </div>
-                  </div>
-                </article>
+                  chart={chart}
+                />
               ))}
             </div>
           </section>
         ))}
 
-        {/* FOOTNOTE */}
-        <section className="visual-note">
-          <h3>About this analysis</h3>
-
-          <p>
-            PCA and t-SNE are used for dimensionality reduction
-            and visualization. The silhouette score evaluates
-            separation in the reduced representations using
-            the known dataset labels. These visualizations
-            support network traffic exploration and do not
-            replace the LightGBM prediction model.
-          </p>
+        {/* TWO COMPARISON GRAPHS SIDE BY SIDE */}
+        <section className="visual-section">
+          <div className="visual-comparison-grid">
+            {comparisonCharts.map((chart) => (
+              <div
+                className="visual-comparison-column"
+                key={chart.file}
+              >
+                <ChartCard chart={chart} />
+              </div>
+            ))}
+          </div>
         </section>
 
       </main>

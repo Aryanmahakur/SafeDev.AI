@@ -3,18 +3,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowRight, Network } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
 
   const navLinks = [
-  { label: "Home", href: "/" },
-  { label: "Solutions", href: "/solutions" },
-  { label: "Why SafeDev", href: "/why-safedev" },
-  { label: "Stakeholders", href: "/stakeholders" },
-  { label: "Contact Us", href: "/contact" },
-];
+    { label: "Home", href: "/" },
+    { label: "Solutions", href: "/solutions" },
+    { label: "Why SafeDev", href: "/why-safedev" },
+    { label: "Stakeholders", href: "/stakeholders" },
+    { label: "Contact Us", href: "/contact" },
+  ];
 
   return (
     <header className="navbar">
@@ -24,10 +24,6 @@ export function Header() {
         className="brand"
         aria-label="SafeDev AI home"
       >
-        <span className="brand-mark">
-          <Network size={19} />
-        </span>
-
         <span>
           SAFEDEV<span className="brand-dot">.</span>AI
         </span>
@@ -74,10 +70,6 @@ export function Footer() {
         className="brand footer-brand"
         aria-label="SafeDev AI home"
       >
-        <span className="brand-mark">
-          <Network size={17} />
-        </span>
-
         <span>
           SAFEDEV<span className="brand-dot">.</span>AI
         </span>
@@ -105,9 +97,7 @@ export default function SiteChrome({ children }) {
   return (
     <>
       <Header />
-
       {children}
-
       <Footer />
     </>
   );

@@ -415,7 +415,7 @@ export default function SimulationPage() {
             </div>
           </section>
 
-          {/* SELECTED COMPUTER */}
+          {/* SELECTED  */}
           {selectedSystem && (
             <div className="simx-selection-note">
               Selected: <strong>{selectedSystem.id}</strong> —{" "}
@@ -444,13 +444,13 @@ export default function SimulationPage() {
             </p>
 
             <Link
-              href="#system-directory"
-              className="simx-visualization-btn"
-            >
-              <Monitor size={16} />
-              View System Details
-              <ArrowUpRight size={15} />
-            </Link>
+  href="/visualizations"
+  className="simx-visualization-btn"
+>
+  <Monitor size={16} />
+  View System Details
+  <ArrowUpRight size={15} />
+</Link>
 
           </div>
         </section>

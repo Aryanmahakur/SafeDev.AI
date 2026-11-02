@@ -1,18 +1,25 @@
 
+import os
 from pathlib import Path
 from threading import Lock
 
 import pandas as pd
+from huggingface_hub import hf_hub_download
 
 from Backend.system_manager import initialize_systems, update_system
 
 
+# ==========================================
+# CONFIGURATION
+# ==========================================
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATASET_PATH = BASE_DIR / "ProcessedDataSet.csv"
 
-SYSTEM_COUNT = 10
+HF_REPO_ID = "AryanMahakur/SafeDev.ai"
+HF_FILENAME = "ProcessedDataSet.csv"
 
-# Keep only a small sample in memory, not the entire 2.5M-row CSV.
+SYSTEM_COUNT = 10
 SAMPLES_PER_CLASS = 100
 
 _records = {}
@@ -20,17 +27,54 @@ _positions = {}
 _lock = Lock()
 
 
+# ==========================================
+# DOWNLOAD DATASET FROM HUGGING FACE
+# ==========================================
+
+def ensure_dataset():
+
+    if DATASET_PATH.exists():
+        return str(DATASET_PATH)
+
+    token = os.getenv("HF_TOKEN")
+
+    if not token:
+        raise RuntimeError(
+            "HF_TOKEN environment variable is missing."
+        )
+
+    print("Downloading dataset from Hugging Face...")
+
+    downloaded_path = hf_hub_download(
+        repo_id=HF_REPO_ID,
+        filename=HF_FILENAME,
+        repo_type="dataset",
+        token=token
+    )
+
+    print(f"Dataset downloaded successfully: {downloaded_path}")
+
+    return downloaded_path
+
+
+# ==========================================
+# LOAD TRAFFIC SAMPLES
+# ==========================================
+
 def load_traffic_samples():
-    """
-    Stream the dataset in chunks and collect representative
-    traffic records for each class.
-    """
 
     global _records, _positions
 
+    dataset_path = ensure_dataset()
+
     samples = {}
 
-    for chunk in pd.read_csv(DATASET_PATH, chunksize=20000):
+    print("Loading traffic samples...")
+
+    for chunk in pd.read_csv(
+        dataset_path,
+        chunksize=20000
+    ):
 
         for label, group in chunk.groupby("Label"):
 
@@ -53,10 +97,9 @@ def load_traffic_samples():
                     "actual_label": str(label)
                 })
 
-        # Stop once we have enough BENIGN records and
-        # samples from at least two attack classes.
         attack_classes = [
-            label for label, records in samples.items()
+            label
+            for label, records in samples.items()
             if label != "BENIGN" and len(records) >= 2
         ]
 
@@ -70,16 +113,26 @@ def load_traffic_samples():
         raise ValueError("Not enough BENIGN records.")
 
     attack_classes = [
-        label for label, records in samples.items()
+        label
+        for label, records in samples.items()
         if label != "BENIGN" and records
     ]
 
     if len(attack_classes) < 2:
-        raise ValueError("At least two attack classes are required.")
+        raise ValueError(
+            "At least two attack classes are required."
+        )
 
     with _lock:
+
         _records = samples
-        _positions = {label: 0 for label in samples}
+
+        _positions = {
+            label: 0
+            for label in samples
+        }
+
+    print("Traffic samples loaded successfully.")
 
     return {
         "available_classes": list(samples.keys()),
@@ -90,26 +143,42 @@ def load_traffic_samples():
     }
 
 
+# ==========================================
+# GET NEXT TRAFFIC RECORD
+# ==========================================
+
 def next_record(label):
+
     with _lock:
+
         records = _records.get(label, [])
 
         if not records:
-            raise ValueError(f"No samples available for {label}")
+            raise ValueError(
+                f"No samples available for {label}"
+            )
 
         position = _positions[label]
+
         record = records[position % len(records)]
+
         _positions[label] += 1
 
         return record
 
 
+# ==========================================
+# START SIMULATION
+# ==========================================
+
 def start_simulation():
+
     if not _records:
         load_traffic_samples()
 
     attack_classes = [
-        label for label in _records
+        label
+        for label in _records
         if label != "BENIGN"
     ]
 
@@ -123,7 +192,13 @@ def start_simulation():
 
     return initialize_systems(selected)
 
+
+# ==========================================
+# ADVANCE SIMULATION
+# ==========================================
+
 def advance_system(system_id, label):
+
     record = next_record(label)
 
     result = update_system(

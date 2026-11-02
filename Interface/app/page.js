@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import {
   ArrowRight,
@@ -146,16 +147,11 @@ export default function Home() {
   return (
     <SiteChrome>
       <main className="home-page">
+
         {/* HERO SECTION */}
         <section className="home-hero section-shell">
           <div className="home-copy">
-            <h1
-              style={{
-                fontSize: "clamp(4rem, 7vw, 6.5rem)",
-                lineHeight: 1.05,
-                letterSpacing: "-0.055em",
-              }}
-            >
+            <h1>
               See Threats.
               <br />
               <span>Stay Ahead.</span>
@@ -409,7 +405,10 @@ export default function Home() {
             </div>
           </div>
         </section>
+
       </main>
     </SiteChrome>
   );
 }
+
+

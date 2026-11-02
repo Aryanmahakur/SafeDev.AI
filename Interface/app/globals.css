@@ -5259,3 +5259,54 @@ a:focus-visible {
 .navbar .nav-cta {
   font-size: inherit;
 }
+/* =========================================
+   HOMEPAGE HERO - MOBILE RESPONSIVENESS FIX
+========================================= */
+
+@media (max-width: 760px) {
+  .home-hero {
+    width: calc(100% - 40px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 35px;
+    overflow: hidden;
+  }
+
+  .home-copy {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .home-hero h1 {
+    width: 100%;
+    max-width: 100%;
+    font-size: clamp(38px, 11vw, 53px);
+    line-height: 1.12;
+    letter-spacing: -2px;
+    overflow-wrap: normal;
+  }
+
+  .home-description {
+    display: block;
+    width: 100%;
+    max-width: 560px;
+    margin-top: 22px;
+    font-size: 14px;
+    line-height: 1.85;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  .home-visual {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+    transform: none;
+  }
+
+  .sd-security-art {
+    width: 100%;
+    max-width: 100%;
+  }
+}

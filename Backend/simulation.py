@@ -34,13 +34,26 @@ _lock = Lock()
 def ensure_dataset():
 
     if DATASET_PATH.exists():
+        print("Dataset already exists locally.")
         return str(DATASET_PATH)
 
     token = os.getenv("HF_TOKEN")
 
+    # Check token without exposing its value
+    print("HF_TOKEN configured:", bool(token))
+    print(
+        "HF_TOKEN prefix valid:",
+        bool(token and token.startswith("hf_"))
+    )
+
     if not token:
         raise RuntimeError(
             "HF_TOKEN environment variable is missing."
+        )
+
+    if not token.startswith("hf_"):
+        raise RuntimeError(
+            "HF_TOKEN does not appear to be a valid Hugging Face token."
         )
 
     print("Downloading dataset from Hugging Face...")
@@ -96,6 +109,9 @@ def load_traffic_samples():
                     "features": features,
                     "actual_label": str(label)
                 })
+
+        # Stop when enough BENIGN samples and
+        # at least two attack classes are collected.
 
         attack_classes = [
             label

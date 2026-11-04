@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -16,6 +17,8 @@ import {
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
 
+const STORAGE_KEY = "safedev-system-states-v1";
+
 export default function SystemDetails({ system }) {
   const [search, setSearch] = useState("");
   const [features, setFeatures] = useState({});
@@ -27,7 +30,6 @@ export default function SystemDetails({ system }) {
 
   const [showOnlyEmpty, setShowOnlyEmpty] = useState(false);
 
-  // Bulk import states
   const [bulkInput, setBulkInput] = useState("");
   const [bulkMessage, setBulkMessage] = useState("");
 
@@ -36,7 +38,7 @@ export default function SystemDetails({ system }) {
   const requestSequence = useRef(0);
 
   // ---------------------------------------------
-  // LOAD SYSTEM DATA
+  // LOAD INDIVIDUAL SYSTEM DATA
   // ---------------------------------------------
 
   useEffect(() => {
@@ -59,15 +61,40 @@ export default function SystemDetails({ system }) {
 
         if (cancelled) return;
 
-        setFeatures(data.features);
+        // Restore only this computer's saved state.
+        let savedState = null;
 
-        setPrediction({
-          prediction: data.prediction,
-          status: data.status,
-          color: data.color,
-          is_attack: data.is_attack,
-          actual_label: data.actual_label,
-        });
+        try {
+          const savedStates = JSON.parse(
+            localStorage.getItem(STORAGE_KEY) || "{}"
+          );
+
+          savedState = savedStates[system.id] || null;
+        } catch {
+          savedState = null;
+        }
+
+        const restoredFeatures =
+          savedState?.features ?? data.features ?? {};
+
+        const restoredPrediction = savedState
+          ? {
+              prediction: savedState.prediction,
+              status: savedState.status,
+              color: savedState.color,
+              is_attack: savedState.isAttack,
+              actual_label: savedState.actualLabel,
+            }
+          : {
+              prediction: data.prediction,
+              status: data.status,
+              color: data.color,
+              is_attack: data.is_attack,
+              actual_label: data.actual_label,
+            };
+
+        setFeatures(restoredFeatures);
+        setPrediction(restoredPrediction);
 
         initialized.current = true;
       } catch (err) {
@@ -90,11 +117,44 @@ export default function SystemDetails({ system }) {
     return () => {
       cancelled = true;
       clearTimeout(timer.current);
+      requestSequence.current += 1;
     };
   }, [system.id]);
 
   // ---------------------------------------------
-  // SEND FEATURES TO LIGHTGBM
+  // SAVE INDIVIDUAL SYSTEM STATE
+  // ---------------------------------------------
+
+  function saveSystemState(data, updatedFeatures) {
+    try {
+      const savedStates = JSON.parse(
+        localStorage.getItem(STORAGE_KEY) || "{}"
+      );
+
+      // Update only the current system ID.
+      savedStates[system.id] = {
+        prediction: data.prediction,
+        status: data.status,
+        color: data.color,
+        isAttack: data.is_attack,
+        actualLabel: data.actual_label,
+        features: updatedFeatures,
+      };
+
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(savedStates)
+      );
+    } catch (storageError) {
+      console.error(
+        "Unable to save system state:",
+        storageError
+      );
+    }
+  }
+
+  // ---------------------------------------------
+  // LIGHTGBM PREDICTION
   // ---------------------------------------------
 
   async function runPrediction(updatedFeatures) {
@@ -129,13 +189,19 @@ export default function SystemDetails({ system }) {
         return;
       }
 
-      setPrediction({
+      const nextPrediction = {
         prediction: data.prediction,
         status: data.status,
         color: data.color,
         is_attack: data.is_attack,
         actual_label: data.actual_label,
-      });
+      };
+
+      setPrediction(nextPrediction);
+
+      // Persist only the current computer.
+      saveSystemState(data, updatedFeatures);
+
     } catch (err) {
       if (currentRequest === requestSequence.current) {
         setError(err.message);
@@ -211,35 +277,24 @@ export default function SystemDetails({ system }) {
 
     const input = bulkInput
       .trim()
-      .replace(/^\|\s*|\|$/g, "");
+      .replace(/^\|+|\|+$/g, "");
 
-    // Excel tab-separated values
     if (input.includes("\t")) {
       values = input.split("\t").map((v) => v.trim());
-    }
-
-    // CSV values
-    else if (input.includes(",")) {
+    } else if (input.includes(",")) {
       values = input.split(",").map((v) => v.trim());
-    }
-
-    // Pipe-separated values
-    else if (input.includes("|")) {
+    } else if (input.includes("|")) {
       values = input
         .split("|")
         .map((v) => v.trim())
         .filter(Boolean);
-    }
-
-    // Space-separated values
-    else {
+    } else {
       values = input.split(/\s+/).filter(Boolean);
     }
 
-    // Ignore an optional final target label, e.g. DDoS
+    // Allow an optional final target label.
     if (
       values.length === 71 &&
-      values[70] !== "" &&
       !Number.isFinite(Number(values[70]))
     ) {
       values = values.slice(0, 70);
@@ -247,7 +302,7 @@ export default function SystemDetails({ system }) {
 
     if (values.length !== 70) {
       setBulkMessage(
-        `Found ${values.length} values. Please paste exactly 70 feature values, excluding the target label.`
+        `Found ${values.length} values. Please paste exactly 70 feature values.`
       );
       return;
     }
@@ -260,14 +315,14 @@ export default function SystemDetails({ system }) {
       )
     ) {
       setBulkMessage(
-        "Import failed: every feature value must be a valid number."
+        "Import failed: every feature must be numeric."
       );
       return;
     }
 
     const numericValues = values.map(Number);
 
-    // Preserve the feature order returned by the backend
+    // Preserve backend feature order.
     const updatedFeatures = Object.fromEntries(
       featureNames.map((name, index) => [
         name,
@@ -275,20 +330,17 @@ export default function SystemDetails({ system }) {
       ])
     );
 
-    // Cancel any pending manual-input prediction
     clearTimeout(timer.current);
 
-    // Invalidate older requests
     requestSequence.current += 1;
 
-    // Populate all 70 existing input fields
     setFeatures(updatedFeatures);
 
     setBulkMessage(
-      "70 features imported. Running one prediction..."
+      "70 features imported. Running prediction..."
     );
 
-    // Exactly one prediction request for this import
+    // One prediction request for this computer.
     runPrediction(updatedFeatures);
   }
 

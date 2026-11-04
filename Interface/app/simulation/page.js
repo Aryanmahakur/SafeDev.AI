@@ -17,14 +17,49 @@ import {
 import SiteChrome from "../components/SiteChrome";
 import NetworkTopology from "./components/NetworkTopology";
 import { systems as initialSystems } from "./components/systemData";
+
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
+const STORAGE_KEY = "safedev-system-states-v1";
+
+function readLocalStates() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved ? JSON.parse(saved) : {};
+  } catch {
+    return {};
+  }
+}
 
 export default function SimulationPage() {
   const [selectedId, setSelectedId] = useState(null);
   const selectionTimeoutRef = useRef(null);
 
-  
+  const [modelSystems, setModelSystems] = useState([]);
+  const [localSystemStates, setLocalSystemStates] = useState({});
+
+  const [connected, setConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Restore individual computer states from this browser.
+  useEffect(() => {
+    setLocalSystemStates(readLocalStates());
+
+    const handleStorageChange = (event) => {
+      if (event.key === STORAGE_KEY) {
+        setLocalSystemStates(readLocalStates());
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   const handleSelection = (id) => {
     if (selectionTimeoutRef.current) {
       clearTimeout(selectionTimeoutRef.current);
@@ -42,7 +77,6 @@ export default function SimulationPage() {
     }, 10000);
   };
 
-  // Clear the pending timeout when the page unmounts.
   useEffect(() => {
     return () => {
       if (selectionTimeoutRef.current) {
@@ -50,12 +84,8 @@ export default function SimulationPage() {
       }
     };
   }, []);
-  const [modelSystems, setModelSystems] = useState([]);
-  const [connected, setConnected] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
 
-  // Initialize or retrieve the ten connected systems.
+  // Load backend systems without overwriting local predictions.
   const loadSimulation = useCallback(async () => {
     try {
       setLoading(true);
@@ -73,7 +103,6 @@ export default function SimulationPage() {
       let data;
 
       if (systemsResponse.status === 409) {
-        // Initialize the simulation if it has not started.
         const startResponse = await fetch(
           `${API}/simulation/start`,
           { method: "POST" }
@@ -111,20 +140,30 @@ export default function SimulationPage() {
     loadSimulation();
   }, [loadSimulation]);
 
-  // Match frontend computer IDs with backend system IDs.
+  // Combine backend defaults with individual browser-saved states.
   const displayedSystems = initialSystems.map((system) => {
     const modelSystem = modelSystems.find(
       (item) => item.system_id === system.id
     );
 
+    const localState = localSystemStates[system.id];
+
+    if (localState) {
+      return {
+        ...system,
+        ...localState,
+        modelConnected: true,
+      };
+    }
+
     return {
       ...system,
-      prediction: modelSystem?.prediction ?? null,
-      status: modelSystem?.status ?? "PENDING",
-      color: modelSystem?.color ?? "grey",
+      prediction: modelSystem?.prediction ?? system.prediction ?? null,
+      status: modelSystem?.status ?? system.status ?? "PENDING",
+      color: modelSystem?.color ?? system.color ?? "grey",
       actualLabel: modelSystem?.actual_label ?? null,
-      features: modelSystem?.features ?? {},
-      isAttack: modelSystem?.is_attack ?? false,
+      features: modelSystem?.features ?? system.features ?? {},
+      isAttack: modelSystem?.is_attack ?? system.isAttack ?? false,
       modelConnected: Boolean(modelSystem),
     };
   });
@@ -135,14 +174,6 @@ export default function SimulationPage() {
 
   const normalCount = displayedSystems.filter(
     (system) => system.status === "NORMAL"
-  ).length;
-
-  const attackCount = displayedSystems.filter(
-    (system) => system.status === "ATTACK"
-  ).length;
-
-  const pendingCount = displayedSystems.filter(
-    (system) => system.status === "PENDING"
   ).length;
 
   return (
@@ -186,10 +217,7 @@ export default function SimulationPage() {
           <div className="simx-overview">
 
             <article className="simx-overview-card">
-              <span>
-                <Monitor size={18} />
-              </span>
-
+              <span><Monitor size={18} /></span>
               <div>
                 <small>REGISTERED SYSTEMS</small>
                 <strong>{displayedSystems.length}</strong>
@@ -197,10 +225,7 @@ export default function SimulationPage() {
             </article>
 
             <article className="simx-overview-card">
-              <span>
-                <Network size={18} />
-              </span>
-
+              <span><Network size={18} /></span>
               <div>
                 <small>NETWORK NODES</small>
                 <strong>{modelSystems.length}</strong>
@@ -208,10 +233,7 @@ export default function SimulationPage() {
             </article>
 
             <article className="simx-overview-card">
-              <span>
-                <Activity size={18} />
-              </span>
-
+              <span><Activity size={18} /></span>
               <div>
                 <small>NORMAL SYSTEMS</small>
                 <strong className="simx-overview-text">
@@ -221,13 +243,9 @@ export default function SimulationPage() {
             </article>
 
             <article className="simx-overview-card">
-              <span>
-                <Shield size={18} />
-              </span>
-
+              <span><Shield size={18} /></span>
               <div>
                 <small>SYSTEM STATUS</small>
-
                 <strong className="simx-overview-text">
                   {loading
                     ? "Loading..."
@@ -258,8 +276,7 @@ export default function SimulationPage() {
                   fontSize: "13px",
                 }}
               >
-                ●{" "}
-                {connected
+                ● {connected
                   ? "Backend Connected"
                   : "Backend Disconnected"}
               </span>
@@ -360,7 +377,6 @@ export default function SimulationPage() {
             </div>
 
             <div className="simx-system-grid">
-
               {displayedSystems.map((system) => (
                 <Link
                   key={system.id}
@@ -388,7 +404,6 @@ export default function SimulationPage() {
 
                   <span className="simx-system-card-info">
                     <strong>{system.id}</strong>
-
                     <small>{system.role}</small>
 
                     <small
@@ -411,11 +426,10 @@ export default function SimulationPage() {
                   />
                 </Link>
               ))}
-
             </div>
           </section>
 
-          {/* SELECTED  */}
+          {/* SELECTED SYSTEM */}
           {selectedSystem && (
             <div className="simx-selection-note">
               Selected: <strong>{selectedSystem.id}</strong> —{" "}
@@ -432,7 +446,6 @@ export default function SimulationPage() {
         {/* SYSTEM INSIGHTS */}
         <section className="section-shell simx-visualization-footer">
           <div className="simx-visualization-content">
-
             <span className="simx-visualization-label">
               SYSTEM INSIGHTS
             </span>
@@ -444,14 +457,13 @@ export default function SimulationPage() {
             </p>
 
             <Link
-  href="/visualizations"
-  className="simx-visualization-btn"
->
-  <Monitor size={16} />
-  View System Details
-  <ArrowUpRight size={15} />
-</Link>
-
+              href="/visualizations"
+              className="simx-visualization-btn"
+            >
+              <Monitor size={16} />
+              View System Details
+              <ArrowUpRight size={15} />
+            </Link>
           </div>
         </section>
 

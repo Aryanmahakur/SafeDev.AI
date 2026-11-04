@@ -55,17 +55,34 @@ export default function NetworkTopology({
 
   return (
     <div className="simx-topology">
+
       {/* Background grid */}
       <div className="simx-topology-grid" />
 
-      {/* Network connection lines */}
+      {/* Network connections and animated traffic */}
       <svg
         className="simx-connections"
         viewBox="0 0 900 520"
         preserveAspectRatio="none"
         aria-hidden="true"
       >
-        {nodes.map(({ system, position, state }) => {
+        <defs>
+          <filter
+            id="green-packet-glow"
+            x="-300%"
+            y="-300%"
+            width="700%"
+            height="700%"
+          >
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        {nodes.map(({ system, position, state }, index) => {
           const x = position.x * 9;
           const y = position.y * 5.2;
 
@@ -76,25 +93,87 @@ export default function NetworkTopology({
                 ? "#ef4444"
                 : "#888888";
 
+          const pathId = `network-path-${index}`;
+
+          const path = `M 450 260 L ${x} ${y}`;
+
           return (
-            <line
-              key={system.id}
-              x1="450"
-              y1="260"
-              x2={x}
-              y2={y}
-              className={`simx-connection-line simx-connection-${state}`}
-              style={{
-                stroke: trafficColor,
-                opacity: state === "pending" ? 0.4 : 0.75,
-              }}
-            />
+            <g key={system.id}>
+
+              {/* Original connection line */}
+              <line
+                x1="450"
+                y1="260"
+                x2={x}
+                y2={y}
+                className={`simx-connection-line simx-connection-${state}`}
+                style={{
+                  stroke: trafficColor,
+                  opacity: state === "pending" ? 0.4 : 0.75,
+                }}
+              />
+
+              {/* Invisible path used by moving packets */}
+              {state === "normal" && (
+                <>
+                  <path
+                    id={pathId}
+                    d={path}
+                    fill="none"
+                  />
+
+                  {/* Green packet: switch to computer */}
+                  <circle
+                    r="4"
+                    fill="#22c55e"
+                    filter="url(#green-packet-glow)"
+                  >
+                    <animateMotion
+                      dur={`${2.8 + (index % 3) * 0.5}s`}
+                      repeatCount="indefinite"
+                      path={path}
+                      begin={`${index * 0.18}s`}
+                    />
+                  </circle>
+
+                  {/* Green packet: computer to switch */}
+                  <circle
+                    r="4"
+                    fill="#22c55e"
+                    filter="url(#green-packet-glow)"
+                  >
+                    <animateMotion
+                      dur={`${3.2 + (index % 3) * 0.5}s`}
+                      repeatCount="indefinite"
+                      path={`M ${x} ${y} L 450 260`}
+                      begin={`${index * 0.18 + 1.4}s`}
+                    />
+                  </circle>
+
+                  {/* Smaller trailing packet */}
+                  <circle
+                    r="2.5"
+                    fill="#86efac"
+                    filter="url(#green-packet-glow)"
+                  >
+                    <animateMotion
+                      dur={`${3.5 + (index % 3) * 0.5}s`}
+                      repeatCount="indefinite"
+                      path={path}
+                      begin={`${index * 0.18 + 1.2}s`}
+                    />
+                  </circle>
+                </>
+              )}
+
+            </g>
           );
         })}
       </svg>
 
       {/* Central network router */}
       <div className="simx-central-router">
+
         <span className="simx-router-glow" />
 
         <span className="simx-router-icon">
@@ -108,6 +187,7 @@ export default function NetworkTopology({
           <i />
           MODEL MONITORING
         </div>
+
       </div>
 
       {/* Connected computer nodes */}
@@ -126,6 +206,7 @@ export default function NetworkTopology({
         <Network size={14} />
         Prediction-driven network simulation · {systems.length} systems
       </div>
+
     </div>
   );
 }

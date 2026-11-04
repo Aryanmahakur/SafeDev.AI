@@ -4,20 +4,22 @@
 import { useState, useEffect, useRef } from "react";
 
 import {
+  getSessionSystem,
+  setSessionSystem
+} from "./sessionSimulationState";
+
+import {
   ArrowDown,
   ArrowUp,
   Monitor,
   Search,
   Shield,
-  Activity,
   Loader2,
   AlertCircle,
 } from "lucide-react";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
-const STORAGE_KEY = "safedev-system-states-v1";
 
 export default function SystemDetails({ system }) {
   const [search, setSearch] = useState("");
@@ -33,14 +35,10 @@ export default function SystemDetails({ system }) {
   const [bulkInput, setBulkInput] = useState("");
   const [bulkMessage, setBulkMessage] = useState("");
 
-  const initialized = useRef(false);
   const timer = useRef(null);
   const requestSequence = useRef(0);
 
-  // ---------------------------------------------
-  // LOAD INDIVIDUAL SYSTEM DATA
-  // ---------------------------------------------
-
+  // LOAD SYSTEM DATA
   useEffect(() => {
     let cancelled = false;
 
@@ -61,42 +59,24 @@ export default function SystemDetails({ system }) {
 
         if (cancelled) return;
 
-        // Restore only this computer's saved state.
-        let savedState = null;
+        // Restore this computer's state from this browser session.
+        // Otherwise use the original backend defaults.
+        const sessionState = getSessionSystem(system.id);
 
-        try {
-          const savedStates = JSON.parse(
-            localStorage.getItem(STORAGE_KEY) || "{}"
-          );
+        setFeatures(
+          sessionState?.features ?? data.features ?? {}
+        );
 
-          savedState = savedStates[system.id] || null;
-        } catch {
-          savedState = null;
-        }
+        setPrediction(
+          sessionState?.prediction ?? {
+            prediction: data.prediction,
+            status: data.status,
+            color: data.color,
+            is_attack: data.is_attack,
+            actual_label: data.actual_label,
+          }
+        );
 
-        const restoredFeatures =
-          savedState?.features ?? data.features ?? {};
-
-        const restoredPrediction = savedState
-          ? {
-              prediction: savedState.prediction,
-              status: savedState.status,
-              color: savedState.color,
-              is_attack: savedState.isAttack,
-              actual_label: savedState.actualLabel,
-            }
-          : {
-              prediction: data.prediction,
-              status: data.status,
-              color: data.color,
-              is_attack: data.is_attack,
-              actual_label: data.actual_label,
-            };
-
-        setFeatures(restoredFeatures);
-        setPrediction(restoredPrediction);
-
-        initialized.current = true;
       } catch (err) {
         if (!cancelled) {
           setError(err.message);
@@ -108,7 +88,6 @@ export default function SystemDetails({ system }) {
       }
     }
 
-    initialized.current = false;
     setFeatures({});
     setPrediction(null);
 
@@ -121,42 +100,7 @@ export default function SystemDetails({ system }) {
     };
   }, [system.id]);
 
-  // ---------------------------------------------
-  // SAVE INDIVIDUAL SYSTEM STATE
-  // ---------------------------------------------
-
-  function saveSystemState(data, updatedFeatures) {
-    try {
-      const savedStates = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "{}"
-      );
-
-      // Update only the current system ID.
-      savedStates[system.id] = {
-        prediction: data.prediction,
-        status: data.status,
-        color: data.color,
-        isAttack: data.is_attack,
-        actualLabel: data.actual_label,
-        features: updatedFeatures,
-      };
-
-      localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(savedStates)
-      );
-    } catch (storageError) {
-      console.error(
-        "Unable to save system state:",
-        storageError
-      );
-    }
-  }
-
-  // ---------------------------------------------
-  // LIGHTGBM PREDICTION
-  // ---------------------------------------------
-
+  // RUN LIGHTGBM PREDICTION
   async function runPrediction(updatedFeatures) {
     const currentRequest = ++requestSequence.current;
 
@@ -199,8 +143,12 @@ export default function SystemDetails({ system }) {
 
       setPrediction(nextPrediction);
 
-      // Persist only the current computer.
-      saveSystemState(data, updatedFeatures);
+      // Store only in temporary browser memory.
+      // This does not modify Render's shared simulation data.
+      setSessionSystem(system.id, {
+        features: updatedFeatures,
+        prediction: nextPrediction,
+      });
 
     } catch (err) {
       if (currentRequest === requestSequence.current) {
@@ -213,10 +161,7 @@ export default function SystemDetails({ system }) {
     }
   }
 
-  // ---------------------------------------------
   // MANUAL FEATURE INPUT
-  // ---------------------------------------------
-
   function handleFeatureChange(name, value) {
     if (value.trim() === "") {
       setFeatures((previous) => ({
@@ -259,10 +204,7 @@ export default function SystemDetails({ system }) {
     }, 120);
   }
 
-  // ---------------------------------------------
   // BULK EXCEL IMPORT
-  // ---------------------------------------------
-
   function handleBulkImport() {
     const featureNames = Object.keys(features);
 
@@ -275,9 +217,7 @@ export default function SystemDetails({ system }) {
 
     let values;
 
-    const input = bulkInput
-      .trim()
-      .replace(/^\|+|\|+$/g, "");
+    const input = bulkInput.trim().replace(/^\|+|\|+$/g, "");
 
     if (input.includes("\t")) {
       values = input.split("\t").map((v) => v.trim());
@@ -292,7 +232,7 @@ export default function SystemDetails({ system }) {
       values = input.split(/\s+/).filter(Boolean);
     }
 
-    // Allow an optional final target label.
+    // Ignore an optional final text label.
     if (
       values.length === 71 &&
       !Number.isFinite(Number(values[70]))
@@ -322,7 +262,6 @@ export default function SystemDetails({ system }) {
 
     const numericValues = values.map(Number);
 
-    // Preserve backend feature order.
     const updatedFeatures = Object.fromEntries(
       featureNames.map((name, index) => [
         name,
@@ -331,7 +270,6 @@ export default function SystemDetails({ system }) {
     );
 
     clearTimeout(timer.current);
-
     requestSequence.current += 1;
 
     setFeatures(updatedFeatures);
@@ -340,14 +278,10 @@ export default function SystemDetails({ system }) {
       "70 features imported. Running prediction..."
     );
 
-    // One prediction request for this computer.
     runPrediction(updatedFeatures);
   }
 
-  // ---------------------------------------------
   // FILTER FEATURES
-  // ---------------------------------------------
-
   const featureEntries = Object.entries(features);
 
   const filteredFeatures = featureEntries.filter(
@@ -366,15 +300,10 @@ export default function SystemDetails({ system }) {
   const normal = prediction?.status === "NORMAL";
   const attack = prediction?.status === "ATTACK";
 
-  // ---------------------------------------------
-  // UI
-  // ---------------------------------------------
-
   return (
     <div className="simx-detail-content">
 
       {/* COMPUTER IDENTIFICATION */}
-
       <div className="simx-device-overview">
 
         <div className="simx-device-icon">
@@ -401,7 +330,6 @@ export default function SystemDetails({ system }) {
       </div>
 
       {/* METRICS */}
-
       <div className="simx-detail-metrics">
 
         <article>
@@ -447,11 +375,9 @@ export default function SystemDetails({ system }) {
       </div>
 
       {/* FEATURE INPUTS */}
-
       <section className="simx-feature-panel">
 
         <div className="simx-panel-heading">
-
           <div>
             <div className="simx-panel-label">
               MACHINE LEARNING INPUTS
@@ -469,11 +395,9 @@ export default function SystemDetails({ system }) {
           <span className="simx-feature-count">
             {filteredFeatures.length} SHOWN
           </span>
-
         </div>
 
         {/* BULK EXCEL IMPORT */}
-
         <div
           style={{
             margin: "18px 0",
@@ -603,7 +527,6 @@ export default function SystemDetails({ system }) {
         </div>
 
         {/* CONTROLS */}
-
         <div className="simx-feature-controls">
 
           <label className="simx-search">
@@ -639,7 +562,6 @@ export default function SystemDetails({ system }) {
         </div>
 
         {/* FEATURE TABLE */}
-
         <div className="simx-feature-table-wrap">
 
           {loading ? (
@@ -666,16 +588,13 @@ export default function SystemDetails({ system }) {
               </thead>
 
               <tbody>
-
                 {filteredFeatures.map(([name, value]) => {
-
                   const index = featureEntries.findIndex(
                     ([featureName]) => featureName === name
                   );
 
                   return (
                     <tr key={name}>
-
                       <td className="simx-feature-index">
                         {index + 1}
                       </td>
@@ -720,7 +639,6 @@ export default function SystemDetails({ system }) {
                             : "AVAILABLE"}
                         </span>
                       </td>
-
                     </tr>
                   );
                 })}
@@ -735,12 +653,10 @@ export default function SystemDetails({ system }) {
                     </td>
                   </tr>
                 )}
-
               </tbody>
 
             </table>
           )}
-
         </div>
 
         <div className="simx-feature-footer">
@@ -756,7 +672,6 @@ export default function SystemDetails({ system }) {
       </section>
 
       {/* PREDICTION RESULT */}
-
       <section
         className="simx-prediction-placeholder"
         style={{
@@ -767,7 +682,6 @@ export default function SystemDetails({ system }) {
               : undefined,
         }}
       >
-
         <div className="simx-prediction-icon">
           {predicting ? (
             <Loader2 size={22} />
@@ -777,7 +691,6 @@ export default function SystemDetails({ system }) {
         </div>
 
         <div>
-
           <div className="simx-panel-label">
             LIGHTGBM SECURITY ANALYSIS
           </div>
@@ -805,7 +718,6 @@ export default function SystemDetails({ system }) {
               Dataset actual label: {prediction.actual_label}
             </p>
           )}
-
         </div>
 
         {prediction && !predicting && (
@@ -818,11 +730,9 @@ export default function SystemDetails({ system }) {
             {prediction.status}
           </span>
         )}
-
       </section>
 
       {/* ERROR */}
-
       {error && (
         <div
           style={{

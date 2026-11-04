@@ -18,46 +18,32 @@ import SiteChrome from "../components/SiteChrome";
 import NetworkTopology from "./components/NetworkTopology";
 import { systems as initialSystems } from "./components/systemData";
 
+import {
+  getSessionSystem,
+  subscribeSessionSystems,
+} from "./components/sessionSimulationState";
+
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
-
-const STORAGE_KEY = "safedev-system-states-v1";
-
-function readLocalStates() {
-  try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : {};
-  } catch {
-    return {};
-  }
-}
 
 export default function SimulationPage() {
   const [selectedId, setSelectedId] = useState(null);
   const selectionTimeoutRef = useRef(null);
 
   const [modelSystems, setModelSystems] = useState([]);
-  const [localSystemStates, setLocalSystemStates] = useState({});
+  const [sessionRevision, setSessionRevision] = useState(0);
 
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Restore individual computer states from this browser.
+  // Listen for temporary predictions made in this browser session.
   useEffect(() => {
-    setLocalSystemStates(readLocalStates());
+    const unsubscribe = subscribeSessionSystems(() => {
+      setSessionRevision((revision) => revision + 1);
+    });
 
-    const handleStorageChange = (event) => {
-      if (event.key === STORAGE_KEY) {
-        setLocalSystemStates(readLocalStates());
-      }
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
+    return unsubscribe;
   }, []);
 
   const handleSelection = (id) => {
@@ -85,7 +71,7 @@ export default function SimulationPage() {
     };
   }, []);
 
-  // Load backend systems without overwriting local predictions.
+  // Load original backend systems.
   const loadSimulation = useCallback(async () => {
     try {
       setLoading(true);
@@ -140,18 +126,25 @@ export default function SimulationPage() {
     loadSimulation();
   }, [loadSimulation]);
 
-  // Combine backend defaults with individual browser-saved states.
+  // Combine backend defaults with this browser session's predictions.
   const displayedSystems = initialSystems.map((system) => {
     const modelSystem = modelSystems.find(
       (item) => item.system_id === system.id
     );
 
-    const localState = localSystemStates[system.id];
+    const sessionState = getSessionSystem(system.id);
 
-    if (localState) {
+    if (sessionState) {
       return {
         ...system,
-        ...localState,
+        features: sessionState.features,
+        prediction: sessionState.prediction?.prediction,
+        status: sessionState.prediction?.status ?? "PENDING",
+        color: sessionState.prediction?.color ?? "grey",
+        actualLabel:
+          sessionState.prediction?.actual_label ?? null,
+        isAttack:
+          sessionState.prediction?.is_attack ?? false,
         modelConnected: true,
       };
     }
@@ -163,7 +156,8 @@ export default function SimulationPage() {
       color: modelSystem?.color ?? system.color ?? "grey",
       actualLabel: modelSystem?.actual_label ?? null,
       features: modelSystem?.features ?? system.features ?? {},
-      isAttack: modelSystem?.is_attack ?? system.isAttack ?? false,
+      isAttack:
+        modelSystem?.is_attack ?? system.isAttack ?? false,
       modelConnected: Boolean(modelSystem),
     };
   });

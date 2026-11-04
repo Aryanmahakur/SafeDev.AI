@@ -6,7 +6,7 @@ from threading import Lock
 import pandas as pd
 from huggingface_hub import hf_hub_download
 
-from Backend.system_manager import initialize_systems, update_system
+from Backend.system_manager import initialize_systems
 
 
 # ==========================================
@@ -39,7 +39,6 @@ def ensure_dataset():
 
     token = os.getenv("HF_TOKEN")
 
-    # Check token without exposing its value
     print("HF_TOKEN configured:", bool(token))
     print(
         "HF_TOKEN prefix valid:",
@@ -109,9 +108,6 @@ def load_traffic_samples():
                     "features": features,
                     "actual_label": str(label)
                 })
-
-        # Stop when enough BENIGN samples and
-        # at least two attack classes are collected.
 
         attack_classes = [
             label
@@ -198,6 +194,11 @@ def start_simulation():
         if label != "BENIGN"
     ]
 
+    if len(attack_classes) < 2:
+        raise ValueError(
+            "At least two attack classes are required."
+        )
+
     selected = [
         next_record("BENIGN")
         for _ in range(8)
@@ -206,21 +207,9 @@ def start_simulation():
     selected.append(next_record(attack_classes[0]))
     selected.append(next_record(attack_classes[1]))
 
+    if len(selected) != SYSTEM_COUNT:
+        raise ValueError(
+            "Simulation must initialize exactly 10 systems."
+        )
+
     return initialize_systems(selected)
-
-
-# ==========================================
-# ADVANCE SIMULATION
-# ==========================================
-
-def advance_system(system_id, label):
-
-    record = next_record(label)
-
-    result = update_system(
-        system_id,
-        record["features"],
-        actual_label=record["actual_label"]
-    )
-
-    return result

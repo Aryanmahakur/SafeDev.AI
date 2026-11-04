@@ -1,76 +1,75 @@
+
 import pandas as pd
 import joblib
 
 
 def test_model():
 
-    # ==========================================
-    # 1. LOAD SAVED MODEL
-    # ==========================================
+    try:
+        # ==========================================
+        # 1. LOAD SAVED MODEL
+        # ==========================================
 
-    saved_model = joblib.load(
-        "Models/lightgbm_model.joblib"
-    )
+        saved_model = joblib.load(
+            "Models/lightgbm_model.joblib"
+        )
 
-    # Your saved file contains a tuple
-    model = saved_model[0]
+        # Model is stored inside a tuple
+        model = saved_model[0]
 
-    # Load LabelEncoder
-    encoder = joblib.load(
-        "Models/label_encoder.pkl"
-    )
+        encoder = joblib.load(
+            "Models/label_encoder.pkl"
+        )
 
-    print("Model loaded successfully.")
-    print("Encoder loaded successfully.")
+        print("Model loaded successfully.")
+        print("Encoder loaded successfully.")
 
+        # ==========================================
+        # 2. USER INPUT
+        # ==========================================
 
-    # ==========================================
-    # 2. USER INPUT
-    # ==========================================
-
-   
-    test_data = {
+        test_data = {
     'Destination Port': 80,
-    'Flow Duration': 1293792,
+    'Flow Duration': 682575,
     'Total Fwd Packets': 3,
-    'Total Backward Packets': 7,
+    'Total Backward Packets': 5,
     'Total Length of Fwd Packets': 26,
     'Total Length of Bwd Packets': 11607,
     'Fwd Packet Length Max': 20,
     'Fwd Packet Length Min': 0,
-    'Fwd Packet Length Mean': 8.666666667,
-    'Fwd Packet Length Std': 10.26320288,
-    'Bwd Packet Length Max': 5840,
+    'Fwd Packet Length Mean': 8.666667,
+    'Fwd Packet Length Std': 10.2632,
+    'Bwd Packet Length Max': 10135,
     'Bwd Packet Length Min': 0,
-    'Bwd Packet Length Mean': 1658.142857,
-    'Bwd Packet Length Std': 2137.29708,
-    'Flow Bytes/s': 8991.398927,
-    'Flow Packets/s': 7.72921768,
-    'Flow IAT Mean': 143754.6667,
-    'Flow IAT Std': 430865.8067,
-    'Flow IAT Max': 1292730,
-    'Flow IAT Min': 2,
-    'Fwd IAT Total': 747,
-    'Fwd IAT Mean': 373.5,
-    'Fwd IAT Std': 523.9661249,
-    'Fwd IAT Max': 744,
-    'Fwd IAT Min': 3,
-    'Bwd IAT Total': 1293746,
-    'Bwd IAT Mean': 215624.3333,
-    'Bwd IAT Std': 527671.9348,
-    'Bwd IAT Max': 1292730,
-    'Bwd IAT Min': 2,
+    'Bwd Packet Length Mean': 2321.4,
+    'Bwd Packet Length Std': 4413.202,
+    'Flow Bytes/s': 17042.82,
+    'Flow Packets/s': 11.72032,
+    'Flow IAT Mean': 97510.71,
+    'Flow IAT Std': 257484,
+    'Flow IAT Max': 681429,
+    'Flow IAT Min': 1,
+    'Fwd IAT Total': 1047,
+    'Fwd IAT Mean': 523.5,
+    'Fwd IAT Std': 738.9266,
+    'Fwd IAT Max': 1046,
+    'Fwd IAT Min': 1,
+    'Bwd IAT Total': 682523,
+    'Bwd IAT Mean': 170630.8,
+    'Bwd IAT Std': 340532.5,
+    'Bwd IAT Max': 681429,
+    'Bwd IAT Min': 4,
     'Fwd PSH Flags': 0,
     'Fwd URG Flags': 0,
     'Fwd Header Length': 72,
-    'Bwd Header Length': 152,
-    'Fwd Packets/s': 2.318765304,
-    'Bwd Packets/s': 5.410452376,
+    'Bwd Header Length': 112,
+    'Fwd Packets/s': 4.395121,
+    'Bwd Packets/s': 7.325202,
     'Min Packet Length': 0,
-    'Max Packet Length': 5840,
-    'Packet Length Mean': 1057.545455,
-    'Packet Length Std': 1853.437529,
-    'Packet Length Variance': 3435230.673,
+    'Max Packet Length': 10135,
+    'Packet Length Mean': 1292.556,
+    'Packet Length Std': 3350.635,
+    'Packet Length Variance': 11200000,
     'FIN Flag Count': 0,
     'SYN Flag Count': 0,
     'RST Flag Count': 0,
@@ -79,87 +78,118 @@ def test_model():
     'URG Flag Count': 0,
     'CWE Flag Count': 0,
     'ECE Flag Count': 0,
-    'Down/Up Ratio': 2,
-    'Average Packet Size': 1163.3,
-    'Avg Fwd Segment Size': 8.666666667,
-    'Avg Bwd Segment Size': 1658.142857,
+    'Down/Up Ratio': 1,
+    'Average Packet Size': 1454.125,
+    'Avg Fwd Segment Size': 8.666667,
+    'Avg Bwd Segment Size': 2321.4,
     'Fwd Header Length.1': 72,
     'Subflow Fwd Packets': 3,
     'Subflow Fwd Bytes': 26,
-    'Subflow Bwd Packets': 7,
+    'Subflow Bwd Packets': 5,
     'Subflow Bwd Bytes': 11607,
     'Init_Win_bytes_forward': 8192,
     'Init_Win_bytes_backward': 229,
     'act_data_pkt_fwd': 2,
     'min_seg_size_forward': 20,
-    'Active Mean': 0.0,
-    'Active Std': 0.0,
+    'Active Mean': 0,
+    'Active Std': 0,
     'Active Max': 0,
     'Active Min': 0,
-    'Idle Mean': 0.0,
-    'Idle Std': 0.0,
+    'Idle Mean': 0,
+    'Idle Std': 0,
     'Idle Max': 0,
     'Idle Min': 0
 }
-    
+        # ==========================================
+        # 3. CREATE DATAFRAME
+        # ==========================================
 
-    # ==========================================
-    # 3. CREATE DATAFRAME
-    # ==========================================
+        X = pd.DataFrame([test_data])
 
-    X = pd.DataFrame([test_data])
+        # ==========================================
+        # 4. NORMALIZE COLUMN NAMES
+        # ==========================================
 
+        X.columns = (
+            X.columns
+            .str.strip()
+            .str.replace(" ", "_", regex=False)
+        )
 
-    # ==========================================
-    # 4. CONVERT COLUMN NAMES
-    # ==========================================
-    # Your input has:
-    #     Destination Port
-    #
-    # Model expects:
-    #     Destination_Port
+        # ==========================================
+        # 5. GET MODEL FEATURES
+        # ==========================================
 
-    X.columns = X.columns.str.replace(
-        " ",
-        "_"
-    )
+        if hasattr(model, "feature_name_"):
+            features = list(model.feature_name_)
 
+        elif hasattr(model, "feature_name"):
+            features = list(model.feature_name())
 
-    # ==========================================
-    # 5. ARRANGE COLUMNS
-    # ==========================================
+        else:
+            raise ValueError(
+                "Cannot retrieve feature names from model."
+            )
 
-    X = X[model.feature_name_]
+        # ==========================================
+        # 6. CHECK MISSING FEATURES
+        # ==========================================
 
+        missing_features = [
+            col for col in features
+            if col not in X.columns
+        ]
 
-    # ==========================================
-    # 6. PREDICT
-    # ==========================================
+        extra_features = [
+            col for col in X.columns
+            if col not in features
+        ]
 
-    prediction = model.predict(X)
+        if missing_features:
+            print("\nMissing Features:")
+            print(missing_features)
 
+            raise ValueError(
+                "Input features do not match model features."
+            )
 
-    # ==========================================
-    # 7. CONVERT NUMBER TO CLASS NAME
-    # ==========================================
+        if extra_features:
+            print("\nExtra Features:")
+            print(extra_features)
 
-    predicted_class = encoder.inverse_transform(
-        prediction.astype(int)
-    )
+        # Arrange columns in exact model order
+        X = X[features]
 
+        print("\nInput shape:", X.shape)
+        print("Expected features:", len(features))
 
-    # ==========================================
-    # 8. DISPLAY RESULT
-    # ==========================================
+        # ==========================================
+        # 7. PREDICTION
+        # ==========================================
 
-    print("\n==============================")
-    print("      MODEL PREDICTION")
-    print("==============================")
+        prediction = model.predict(X)
 
-    print("Encoded Prediction :", prediction[0])
-    print("Predicted Class     :", predicted_class[0])
+        predicted_class = encoder.inverse_transform(
+            prediction.astype(int)
+        )
 
-    print("==============================")
+        # ==========================================
+        # 8. DISPLAY RESULT
+        # ==========================================
+
+        print("\n================================")
+        print("         MODEL PREDICTION")
+        print("================================")
+
+        print("Encoded Prediction :", prediction[0])
+        print("Predicted Class     :", predicted_class[0])
+
+        print("================================")
+
+    except Exception as e:
+
+        print("\nERROR OCCURRED:")
+        print(type(e).__name__, ":", e)
 
 
 if __name__ == "__main__":

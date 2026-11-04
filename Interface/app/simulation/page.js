@@ -24,7 +24,7 @@ export default function SimulationPage() {
   const [selectedId, setSelectedId] = useState(null);
   const selectionTimeoutRef = useRef(null);
 
-  // Keep the selected-system bar visible for 10 seconds after hover ends.
+  
   const handleSelection = (id) => {
     if (selectionTimeoutRef.current) {
       clearTimeout(selectionTimeoutRef.current);

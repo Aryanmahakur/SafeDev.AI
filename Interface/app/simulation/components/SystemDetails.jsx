@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -16,9 +15,9 @@ import {
 
 const API =
   process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+
 export default function SystemDetails({ system }) {
   const [search, setSearch] = useState("");
-
   const [features, setFeatures] = useState({});
   const [prediction, setPrediction] = useState(null);
 
@@ -28,13 +27,17 @@ export default function SystemDetails({ system }) {
 
   const [showOnlyEmpty, setShowOnlyEmpty] = useState(false);
 
+  // Bulk import states
+  const [bulkInput, setBulkInput] = useState("");
+  const [bulkMessage, setBulkMessage] = useState("");
+
   const initialized = useRef(false);
   const timer = useRef(null);
   const requestSequence = useRef(0);
 
-  // ------------------------------------------------
-  // LOAD THIS COMPUTER'S ACTUAL BACKEND DATA
-  // ------------------------------------------------
+  // ---------------------------------------------
+  // LOAD SYSTEM DATA
+  // ---------------------------------------------
 
   useEffect(() => {
     let cancelled = false;
@@ -57,6 +60,7 @@ export default function SystemDetails({ system }) {
         if (cancelled) return;
 
         setFeatures(data.features);
+
         setPrediction({
           prediction: data.prediction,
           status: data.status,
@@ -89,9 +93,9 @@ export default function SystemDetails({ system }) {
     };
   }, [system.id]);
 
-  // ------------------------------------------------
-  // SEND UPDATED FEATURES TO LIGHTGBM
-  // ------------------------------------------------
+  // ---------------------------------------------
+  // SEND FEATURES TO LIGHTGBM
+  // ---------------------------------------------
 
   async function runPrediction(updatedFeatures) {
     const currentRequest = ++requestSequence.current;
@@ -104,11 +108,9 @@ export default function SystemDetails({ system }) {
         `${API}/simulation/systems/${system.id}/update`,
         {
           method: "POST",
-
           headers: {
             "Content-Type": "application/json",
           },
-
           body: JSON.stringify({
             features: updatedFeatures,
           }),
@@ -123,7 +125,6 @@ export default function SystemDetails({ system }) {
         );
       }
 
-      // Ignore an older response if a newer request exists.
       if (currentRequest !== requestSequence.current) {
         return;
       }
@@ -135,7 +136,6 @@ export default function SystemDetails({ system }) {
         is_attack: data.is_attack,
         actual_label: data.actual_label,
       });
-
     } catch (err) {
       if (currentRequest === requestSequence.current) {
         setError(err.message);
@@ -147,9 +147,9 @@ export default function SystemDetails({ system }) {
     }
   }
 
-  // ------------------------------------------------
-  // HANDLE INPUT CHANGES
-  // ------------------------------------------------
+  // ---------------------------------------------
+  // MANUAL FEATURE INPUT
+  // ---------------------------------------------
 
   function handleFeatureChange(name, value) {
     if (value.trim() === "") {
@@ -179,7 +179,6 @@ export default function SystemDetails({ system }) {
 
     clearTimeout(timer.current);
 
-    // Short debounce prevents excessive requests while typing.
     timer.current = setTimeout(() => {
       if (
         Object.values(updatedFeatures).every(
@@ -194,9 +193,108 @@ export default function SystemDetails({ system }) {
     }, 120);
   }
 
-  // ------------------------------------------------
+  // ---------------------------------------------
+  // BULK EXCEL IMPORT
+  // ---------------------------------------------
+
+  function handleBulkImport() {
+    const featureNames = Object.keys(features);
+
+    if (featureNames.length !== 70) {
+      setBulkMessage(
+        `Expected 70 loaded features, but found ${featureNames.length}.`
+      );
+      return;
+    }
+
+    let values;
+
+    const input = bulkInput
+      .trim()
+      .replace(/^\|\s*|\|$/g, "");
+
+    // Excel tab-separated values
+    if (input.includes("\t")) {
+      values = input.split("\t").map((v) => v.trim());
+    }
+
+    // CSV values
+    else if (input.includes(",")) {
+      values = input.split(",").map((v) => v.trim());
+    }
+
+    // Pipe-separated values
+    else if (input.includes("|")) {
+      values = input
+        .split("|")
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
+
+    // Space-separated values
+    else {
+      values = input.split(/\s+/).filter(Boolean);
+    }
+
+    // Ignore an optional final target label, e.g. DDoS
+    if (
+      values.length === 71 &&
+      values[70] !== "" &&
+      !Number.isFinite(Number(values[70]))
+    ) {
+      values = values.slice(0, 70);
+    }
+
+    if (values.length !== 70) {
+      setBulkMessage(
+        `Found ${values.length} values. Please paste exactly 70 feature values, excluding the target label.`
+      );
+      return;
+    }
+
+    if (
+      values.some(
+        (value) =>
+          value === "" ||
+          !Number.isFinite(Number(value))
+      )
+    ) {
+      setBulkMessage(
+        "Import failed: every feature value must be a valid number."
+      );
+      return;
+    }
+
+    const numericValues = values.map(Number);
+
+    // Preserve the feature order returned by the backend
+    const updatedFeatures = Object.fromEntries(
+      featureNames.map((name, index) => [
+        name,
+        numericValues[index],
+      ])
+    );
+
+    // Cancel any pending manual-input prediction
+    clearTimeout(timer.current);
+
+    // Invalidate older requests
+    requestSequence.current += 1;
+
+    // Populate all 70 existing input fields
+    setFeatures(updatedFeatures);
+
+    setBulkMessage(
+      "70 features imported. Running one prediction..."
+    );
+
+    // Exactly one prediction request for this import
+    runPrediction(updatedFeatures);
+  }
+
+  // ---------------------------------------------
   // FILTER FEATURES
-  // ------------------------------------------------
+  // ---------------------------------------------
 
   const featureEntries = Object.entries(features);
 
@@ -216,9 +314,9 @@ export default function SystemDetails({ system }) {
   const normal = prediction?.status === "NORMAL";
   const attack = prediction?.status === "ATTACK";
 
-  // ------------------------------------------------
+  // ---------------------------------------------
   // UI
-  // ------------------------------------------------
+  // ---------------------------------------------
 
   return (
     <div className="simx-detail-content">
@@ -311,7 +409,8 @@ export default function SystemDetails({ system }) {
 
             <p>
               Edit any feature to automatically run a new
-              LightGBM prediction.
+              LightGBM prediction, or import a complete Excel
+              row below.
             </p>
           </div>
 
@@ -319,6 +418,136 @@ export default function SystemDetails({ system }) {
             {filteredFeatures.length} SHOWN
           </span>
 
+        </div>
+
+        {/* BULK EXCEL IMPORT */}
+
+        <div
+          style={{
+            margin: "18px 0",
+            padding: "16px",
+            border: "1px solid #333",
+            borderRadius: "8px",
+            background: "#111",
+          }}
+        >
+          <label
+            htmlFor="bulk-feature-input"
+            style={{
+              display: "block",
+              marginBottom: "8px",
+              fontWeight: 600,
+            }}
+          >
+            IMPORT 70 FEATURES FROM EXCEL
+          </label>
+
+          <p
+            style={{
+              margin: "0 0 10px",
+              color: "#aaa",
+              fontSize: "13px",
+            }}
+          >
+            Copy one complete Excel row and paste its 70
+            numeric feature values here. Leave out the final
+            Attack Type label.
+          </p>
+
+          <textarea
+            id="bulk-feature-input"
+            value={bulkInput}
+            onChange={(event) => {
+              setBulkInput(event.target.value);
+              setBulkMessage("");
+            }}
+            placeholder="Paste the 70 Excel values here (tab-separated)..."
+            rows={3}
+            style={{
+              width: "100%",
+              boxSizing: "border-box",
+              padding: "10px",
+              resize: "vertical",
+              background: "#151515",
+              border: "1px solid #444",
+              borderRadius: "5px",
+              color: "#fff",
+              fontFamily: "monospace",
+            }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "12px",
+              marginTop: "10px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={handleBulkImport}
+              disabled={
+                loading ||
+                predicting ||
+                !bulkInput.trim()
+              }
+              style={{
+                background: "#f97316",
+                color: "#fff",
+                border: 0,
+                borderRadius: "6px",
+                padding: "10px 15px",
+                cursor: "pointer",
+                opacity:
+                  loading ||
+                  predicting ||
+                  !bulkInput.trim()
+                    ? 0.55
+                    : 1,
+              }}
+            >
+              {predicting
+                ? "Predicting..."
+                : "Import 70 Features & Predict"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setBulkInput("");
+                setBulkMessage("");
+              }}
+              style={{
+                background: "transparent",
+                color: "#ccc",
+                border: "1px solid #555",
+                borderRadius: "6px",
+                padding: "9px 13px",
+                cursor: "pointer",
+              }}
+            >
+              Clear
+            </button>
+
+            {bulkMessage && (
+              <span
+                role="status"
+                style={{
+                  color:
+                    bulkMessage.includes("failed") ||
+                    bulkMessage.includes("Found") ||
+                    bulkMessage.includes("Expected")
+                      ? "#ef4444"
+                      : "#22c55e",
+                  fontSize: "13px",
+                }}
+              >
+                {bulkMessage}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* CONTROLS */}
@@ -357,12 +586,17 @@ export default function SystemDetails({ system }) {
 
         </div>
 
-        {/* TABLE */}
+        {/* FEATURE TABLE */}
 
         <div className="simx-feature-table-wrap">
 
           {loading ? (
-            <div style={{ padding: 30, textAlign: "center" }}>
+            <div
+              style={{
+                padding: 30,
+                textAlign: "center",
+              }}
+            >
               <Loader2 className="animate-spin" />
               Loading network features...
             </div>
